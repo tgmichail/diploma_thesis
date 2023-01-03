@@ -1,0 +1,160 @@
+<!-- fastNlMeansDenoising -->
+<script type="text/javascript">
+  RED.nodes.registerType("fast Nlmeans denoising",{
+    category: 'image restoration',
+    color: '#123999',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      hh: {value: "3"},
+      isGrayscale: {value: false},
+      hColor: {value: "10"},
+      templateWindowSize: {value: "7"},
+      searchWindowSize: {value: "21"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "img",
+    icon: "",
+    label: function() {
+      return this.name||"fast Nlmeans denoising";
+    },
+    oneditprepare: function(){
+      handleGrayCheckboxFastNlDenois(document.getElementById('node-input-isGrayscale').checked);
+    }
+  });
+  function handleGrayCheckboxFastNlDenois(val){
+    document.getElementById('node-input-hColor').parentElement.hidden = !!val;
+  }
+</script>
+
+<!-- fastNlMeansDenoising -->
+<script type="text/html" data-template-name="fast Nlmeans denoising">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-hh"><i class="fa fa-tag"></i> h</label>
+    <input type="number" id="node-input-hh" min=0.5 step=0.1>
+  </div>
+  <div class="form-row">
+    <label for="node-input-isGrayscale"><i class="fa fa-tag"></i> is grayscale</label>
+    <input type="checkbox" id="node-input-isGrayscale" oninput="handleGrayCheckboxFastNlDenois(this.checked)">
+  </div>
+  <div class="form-row">
+    <label for="node-input-hColor"><i class="fa fa-tag"></i> hColor</label>
+    <input type="number" id="node-input-hColor" min=0.5 step=0.1>
+  </div>
+  <div class="form-row">
+    <label for="node-input-templateWindowSize"><i class="fa fa-tag"></i> templateWindowSize</label>
+    <input type="number" id="node-input-templateWindowSize" min=3 step=2>
+  </div>
+  <div class="form-row">
+    <label for="node-input-searchWindowSize"><i class="fa fa-tag"></i> searchWindowSize</label>
+    <input type="number" id="node-input-searchWindowSize" min=3 step=2>
+  </div></script>
+
+<script type="text/html" data-help-name="fast Nlmeans denoising">
+  <p> TODO merge
+    Perform image denoising using Non-local Means Denoising algorithm  with
+    several computational optimizations. Noise expected to be a gaussian white
+    noise.
+  </p>
+  <p> Arguments:
+    <ul>
+      <li> h: Parameter regulating filter strength. Big h value perfectly
+        removes noise but also removes image details, smaller h value preserves
+        details but also preserves some noise
+      <li> templateWindowSize: Size in pixels of the template patch that is used
+         to compute weights. Should be odd. Recommended value 7 pixels
+      <li> searchWindowSize: Size in pixels of the window that is used to
+        compute weighted average for given pixel. Should be odd. Affect
+        performance linearly: greater searchWindowsSize - greater denoising time. Recommended value 21 pixels
+    </ul>
+  </p>
+  <p> Modification of fastNlMeansDenoising function for colored images. converts
+     image to CIELAB colorspace and then separately denoise L and AB components
+     with given h parameters using FastNonLocalMeansDenoising::simpleMethod
+     function.
+  </p>
+  <p> Arguments:
+    <ul>
+      <li> h: Parameter regulating filter strength for luminance component.
+        Bigger h value perfectly removes noise but also removes image details,
+        smaller h value preserves details but also preserves some noise.
+      <li> hColor: The same as h but for color components. For most images value
+         equals 10 will be enough to remove colored noise and do not distort
+         colors.
+      <li> templateWindowSize: Size in pixels of the template patch that is used
+        to compute weights. Should be odd. Recommended value 7 pixels
+      <li> searchWindowSize: Size in pixels of the window that is used to
+        compute weighted average for given pixel. Should be odd. Affect
+        performance linearly: greater searchWindowsSize - greater denoising time.
+         Recommended value 21 pixels
+    </ul>
+  </p>
+</script>
+
+
+<!-- inpaint -->
+<script type="text/javascript">
+  RED.nodes.registerType("inpainting",{
+    category: 'image restoration',
+    color: '#123999',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      inpaintRadius: {value: "3"},
+      flags: {value: "0"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "img",
+    icon: "",
+    label: function() {
+      return this.name||"inpainting";
+    }
+  });
+</script>
+
+<!-- inpaint -->
+<script type="text/html" data-template-name="inpainting">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-inpaintRadius"><i class="fa fa-tag"></i> inpaintRadius</label>
+    <input type="number" id="node-input-inpaintRadius" min=0 step=0.1>
+  </div>
+  <div class="form-row">
+    <label for="node-input-flags"><i class="fa fa-tag"></i> method</label>
+    <select id="node-input-flags">
+      <option value="0">INPAINT_NS</option>
+      <option value="1">INPAINT_TELEA</option>
+    </select>
+  </div>
+  <div style="background: var(--red-ui-form-tips-background, #ffe);border-radius: 2px;border: 1px solid var(--red-ui-secondary-border-color, #ddd);">
+    Expected keys for the input message:
+    <ul>
+      <li>Image: img</li>
+      <li>Mask: img_mask</li>
+    </ul>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="inpainting">
+  <p> Restores the selected region in an image using the region neighborhood.
+  </p>
+  <p> Arguments:
+    <ul>
+      <li> inpaintMask: Inpainting mask. Non-zero pixels indicate the area that
+        needs to be inpainted.
+      <li> inpaintRadius: Radius of a circular neighborhood of each point
+        inpainted that is considered by the algorithm.
+      <li> method: Inpainting method. Could be either a Navier-Stokes based method
+        (INPAINT_NS) or an algorithm proposed by Alexandru Telea (INPAINT_TELEA).
+    </ul>
+  </p>
+</script>

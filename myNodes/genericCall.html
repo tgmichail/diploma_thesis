@@ -1,0 +1,188 @@
+<style type="text/css">
+  #manyParams td {
+    border: 1px solid black;
+    height: 2em;
+    padding: 0 4px;
+  }
+  #manyParams td:last-child, #manyParams > tfoot th:first-child{
+    cursor: pointer;
+  }
+</style>
+
+<script type="text/javascript">
+  let imgNodesSavedConfigs = {};
+  let tbody;
+
+  function addRowToTable(key, value){
+    let newrow = tbody.appendChild(tbody.rows[0].cloneNode(true));
+    newrow.hidden = false;
+
+    newrow.cells[0].innerText = key;
+    newrow.cells[1].innerText = value;
+  }
+
+  function onEditPrepare_GenericCall(){
+
+    console.log('called onEditPrepare_GenericCall');
+
+    tbody = document.getElementById('manyParams').tBodies[0];
+
+    $.getJSON('context/global', onGetContext);
+
+    let params = '';
+    try {
+      params = JSON.parse(document.getElementById('node-input-params').value);
+    } catch (e){
+      console.warn('error in json parse in prepare dialog ' + e);
+      return;
+    }
+
+    if (! (params && Object.keys(params).length)) // if there are no properties
+      return;
+
+    tbody.rows[1].remove(); // remove the placeholder row, we will add actual data
+
+    for (let key in params){
+      let val = params[key];
+      if (typeof val !== 'string')
+        val = JSON.stringify(val); // otherwise it would mess up lists. '3,4' instead of '[3,4]'
+
+      addRowToTable(key, val);
+    }
+  }
+
+  function onEditSave_GenericCall(){
+    console.log('called onEditSave_GenericCall');
+
+    let params = {};
+
+    for (let row of tbody.rows){ // for _ in _ also takes .length and more. We want for_of_ which goes over rows[0]..rows[i]
+
+      let key = row.cells[0].innerText.trim();
+      let val = row.cells[1].innerText;
+      if (key == 'key...') // if it is the default placeholder row
+        continue;
+
+      try {
+        val = JSON.parse(val);
+        // try if it is a number, or array, or object... If it's just a string,
+        // it will throw error but we catch and continue with the string
+      } catch (e){
+        console.warn('error in json parse in save dialog ' + e);
+      }
+
+      params[key] = val;
+    }
+    document.getElementById('node-input-params').value = JSON.stringify(params);
+  }
+
+  function onGetContext(data){
+    if (! (data && data.file && data.file.imgNodesSavedConfigs &&
+          data.file.imgNodesSavedConfigs.msg)){
+      console.warn('onGetContext, cannot find data.file.imgNodesSavedConfigs.msg')
+      console.log(data)
+      return
+    }
+
+    imgNodesSavedConfigs = JSON.parse(data.file.imgNodesSavedConfigs.msg)
+
+    // add entries in the loadNode dropdown
+    const loadNode_dropdown = document.getElementById('loadNode')
+    for (let paramName in imgNodesSavedConfigs)
+      loadNode_dropdown.options.add(new Option(paramName))
+  }
+
+  function onLoadNodeDropdown(nodeType){
+    if (nodeType == '-')
+      return
+
+    document.getElementById('node-input-funcName').value = nodeType;
+    document.getElementById('node-input-outputs').value = imgNodesSavedConfigs[nodeType].outputs;
+    document.getElementById('node-input-outputLabel').value = imgNodesSavedConfigs[nodeType].outputLabel;
+    let paramsToAdd = imgNodesSavedConfigs[nodeType].params;
+
+    // clear params from the table. skip the 1st one, which is the template and hidden
+    // Backwards, because otherwise we would delete a[1], and a[2] would become a[1] and would not be deleted
+    for (let r = tbody.rows.length - 1; r >= 1; r--){
+      tbody.rows[r].remove()
+    }
+
+    for (let param of paramsToAdd)
+      addRowToTable(param, '');
+  }
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('generic call',{
+    category: 'generic call',
+    color: '#eec1ad',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      funcName: {value: ""},
+      params: {value: "{}"},
+      outputLabel: {value: ""},
+      outputs: {value: 1}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    icon: "",
+    label: function() {
+      return this.name||"generic call";
+    },
+    oneditprepare: onEditPrepare_GenericCall,
+    oneditsave: onEditSave_GenericCall
+  });
+</script>
+
+<script type="text/html" data-template-name="generic call">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="loadNode"><i class="fa fa-tag"></i> Load a saved function and parameter names</label>
+    <select id="loadNode" oninput="onLoadNodeDropdown(this.value)"><option>-</select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-funcName"><i class="fa fa-tag"></i> Function name</label>
+    <input type="text" id="node-input-funcName" placeholder="cvtColor">
+  </div>
+  <div class="form-row">
+    <label for="node-input-outputs"><i class="fa fa-tag"></i> Outputs</label>
+    <input type="number" id="node-input-outputs" min=0>
+  </div>
+  <div class="form-row">
+    <label for="node-input-outputLabel"><i class="fa fa-tag"></i> Custom output type (optional)</label>
+    <input type="text" id="node-input-outputLabel" placeholder="returnCode,img">
+  </div>
+  <div class="form-row">Parameters:
+    <table id="manyParams" style="border-collapse: collapse; width: 80%" contenteditable>
+      <thead>
+        <tr class="row" contenteditable="false">
+          <th>Key:
+          <th>Value:
+          <th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row" hidden>
+          <td>key...
+          <td>value...
+          <td contenteditable="false" onclick="this.parentElement.remove()")>x
+        </tr>
+        <tr class="row">
+          <td>key...
+          <td>value...
+          <td contenteditable="false" onclick="this.parentElement.remove()")>x
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="row" contenteditable="false">
+          <th onclick="let newrow = tbody.appendChild(tbody.rows[0].cloneNode(true)); newrow.hidden = false;" colspan=3>+
+        </tr>
+      </tfoot>
+    </table>
+    <input type="hidden" id="node-input-params">
+  </div>
+</script>

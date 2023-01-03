@@ -1,0 +1,122 @@
+{
+    "id": "ce6153fd.93e5d8",
+    "type": "subflow",
+    "name": "get image from web",
+    "info": "A node that gets an image from a http(s) url, and returns it base64 encoded.<br>\nSupported image types include jpg, png, bmp and more. Svg is not supported",
+    "category": "image sources",
+    "in": [
+      {
+        "x": 40,
+        "y": 40,
+        "wires": [
+          {
+            "id": "ba16da99.6dd938"
+          }
+        ]
+      }
+    ],
+    "out": [
+      {
+        "x": 720,
+        "y": 40,
+        "wires": [
+          {
+            "id": "6dead82b.b7d788",
+            "port": 0
+          }
+        ]
+      }
+    ],
+    "env": [
+      {
+        "name": "img_url",
+        "type": "str",
+        "value": "https://upload.wikimedia.org/wikipedia/en/thumb/8/80/Wikipedia-logo-v2.svg/103px-Wikipedia-logo-v2.svg.png",
+        "ui": {
+          "icon": "font-awesome/fa-globe",
+          "label": {
+            "en-US": "Image URL"
+          },
+          "type": "input",
+          "opts": {
+            "types": [
+              "str"
+            ]
+          }
+        }
+      }
+    ],
+    "meta": {},
+    "color": "#26bbcf",
+    "outputLabels": [
+      "image"
+    ],
+    "flow": [
+
+  {
+    "id": "edbb3bba.068ea",
+    "type": "http request",
+    "z": "ce6153fd.93e5d8",
+    "name": "",
+    "method": "GET",
+    "ret": "bin",
+    "paytoqs": "ignore",
+    "url": "${img_url}",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "authType": "",
+    "x": 420,
+    "y": 40,
+    "wires": [
+      [
+        "6dead82b.b7d788"
+      ]
+    ]
+  },
+  {
+    "id": "6dead82b.b7d788",
+    "type": "function",
+    "z": "ce6153fd.93e5d8",
+    "name": "",
+    "func": "if (msg.statusCode != 200){\n  node.error('Web request for image failed, with status ' + msg.statusCode)\n  return;\n}\nmsg.payload = msg.payload.toString('base64');\nmsg.key = 'img';\nmsg.times = {};\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 580,
+    "y": 40,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "ba16da99.6dd938",
+    "type": "change",
+    "z": "ce6153fd.93e5d8",
+    "name": "",
+    "rules": [
+      {
+        "t": "set",
+        "p": "headers",
+        "pt": "msg",
+        "to": "{\"accept\":\"image/*\"}",
+        "tot": "json"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false,
+    "x": 200,
+    "y": 40,
+    "wires": [
+      [
+        "edbb3bba.068ea"
+      ]
+    ]
+  }
+]
+}

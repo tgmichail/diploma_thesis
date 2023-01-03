@@ -1,0 +1,41 @@
+{
+  "name": "remote-image-processing",
+  "version": "0.1.2",
+  "description": "Functions that ask the Image Processing computation from a server, through a message broker.",
+  "keywords": [
+    "image",
+    "image processing",
+    "mqtt",
+    "pipeline"
+  ],
+  "author": "TM",
+  "node-red": {
+    "nodes": {
+      "my-mqtt-broker": "my-mqtt-broker.js",
+      "generic call": "genericCall.js",
+      "image sources": "imageSources.js",
+      "image sources web": "imageSourcesWeb.js",
+      "basic operations": "basicOperations.js",
+      "drawing functions": "drawing.js",
+      "create masks": "createMask.js",
+      "fourier tranform": "fourierTr.js",
+      "filters": "filtering.js",
+      "detection": "detection.js",
+      "segmentation": "segmentation.js",
+      "histogram related stuff": "histogramRelated.js",
+      "contour related stuff": "contourRelated.js",
+      "image restoration": "imageRestoration.js",
+      "depth map": "miscellaneous.js"
+    },
+    "dependencies": [
+      "node-red-contrib-image-output"
+    ]
+  },
+  "dependencies": {
+    "mqtt": "^4.3.7",
+    "node-red-contrib-image-output": "^0.6.3"
+  },
+  "engines" : {
+    "node" : ">=8.3.0"
+  }
+}

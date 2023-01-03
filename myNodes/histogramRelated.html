@@ -1,0 +1,296 @@
+<!-- calcHist -->
+<script type="text/javascript">
+  RED.nodes.registerType("calculate histogram",{
+    category: 'histogram related',
+    color: '#666666',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      isGrayscale: {value: false},
+      numBins: {value: "256"},
+      channel: {value: "0"}
+    },
+    inputs:1,
+    inputLabels: "img (+img_mask?)",
+    outputs:1,
+    outputLabels: "hist",
+    icon: "",
+    label: function() {
+      return this.name||"calculate histogram";
+    },
+    oneditprepare: function(){
+      isGrayscaleCalcHistHandler(document.getElementById('node-input-isGrayscale').checked);
+    }
+  });
+</script>
+
+<script type="text/javascript">
+  function isGrayscaleCalcHistHandler(val){
+    document.getElementById('node-input-channel').parentElement.hidden = val;
+  }
+</script>
+
+<!-- calcHist -->
+<script type="text/html" data-template-name="calculate histogram">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-isGrayscale"><i class="fa fa-tag"></i> isGrayscale</label>
+    <input type="checkbox" id="node-input-isGrayscale" oninput="isGrayscaleCalcHistHandler(this.checked)">
+  </div>
+  <div class="form-row">
+    <label for="node-input-numBins"><i class="fa fa-tag"></i> numBins</label>
+    <input type="number" id="node-input-numBins" min=1 max=256>
+  </div>
+  <div class="form-row">
+    <label for="node-input-channel"><i class="fa fa-tag"></i> channel</label>
+    <select id="node-input-channel">
+      <option value="2">ch_red</option>
+      <option value="1">ch_green</option>
+      <option value="0">ch_blue</option>
+    </select>
+  </div>
+  <div style="background: var(--red-ui-form-tips-background, #ffe);border-radius: 2px;border: 1px solid var(--red-ui-secondary-border-color, #ddd);">
+    If a mask is given, then the expected keys for the input message are:
+    <ul>
+      <li>Image: img</li>
+      <li>Mask: img_mask</li>
+    </ul>
+    Else, no renaming is expected.
+  </div>
+</script>
+
+<script type="text/html" data-help-name="calculate histogram">
+  <p>TODO
+  </p>
+</script>
+
+<!-- plotHist -->
+<script type="text/javascript">
+  RED.nodes.registerType("plot histogram",{
+    category: 'histogram related',
+    color: '#666666',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      perChannel: {value: false},
+      logy: {value: true}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "hist plot",
+    icon: "",
+    label: function() {
+      return this.name||"plot histogram";
+    }
+  });
+</script>
+
+<!-- plotHist -->
+<script type="text/html" data-template-name="plot histogram">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-perChannel"><i class="fa fa-tag"></i> perChannel</label>
+    <input type="checkbox" id="node-input-perChannel">
+  </div>
+  <div class="form-row">
+    <label for="node-input-logy"><i class="fa fa-tag"></i> logy</label>
+    <input type="checkbox" id="node-input-logy">
+  </div></script>
+
+<script type="text/html" data-help-name="plot histogram">
+  <p>TODO
+  </p>
+</script>
+
+
+<!-- histEqualization -->
+<script type="text/javascript">
+  RED.nodes.registerType("histogram equalization",{
+    category: 'histogram related',
+    color: '#666666',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      equalType: {value: "0"},
+      clipLimit: {value: "40"},
+      tileGridSizeX: {value: "8"},
+      tileGridSizeY: {value: "8"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "hist",
+    icon: "",
+    label: function() {
+      return this.name||"histogram equalization";
+    },
+    oneditprepare: function(){
+      equalTypeHandler(document.getElementById('node-input-equalType').value);
+    }
+  });
+</script>
+
+<script type="text/javascript">
+  function equalTypeHandler(val){
+    document.getElementById('node-input-clipLimit').parentElement.hidden = !val;
+    document.getElementById('node-input-tileGridSizeX').parentElement.hidden = !val;
+    document.getElementById('node-input-tileGridSizeY').parentElement.hidden = !val;
+  }
+</script>
+
+<!-- histEqualization -->
+<script type="text/html" data-template-name="histogram equalization">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-equalType"><i class="fa fa-tag"></i> equalization type</label>
+    <select id="node-input-equalType" oninput="equalTypeHandler(this.value)">
+      <option value="0">basic</option>
+      <option value="1">adaptive</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-clipLimit"><i class="fa fa-tag"></i> clipLimit</label>
+    <input type="number" id="node-input-clipLimit">
+  </div>
+  <div class="form-row">
+    <label for="node-input-tileGridSizeX"><i class="fa fa-tag"></i> tileGridSizeX</label>
+    <input type="number" id="node-input-tileGridSizeX" min=2>
+  </div>
+  <div class="form-row">
+    <label for="node-input-tileGridSizeY"><i class="fa fa-tag"></i> tileGridSizeY</label>
+    <input type="number" id="node-input-tileGridSizeY" min=2>
+  </div></script>
+
+<script type="text/html" data-help-name="histogram equalization">
+  <p>TODO
+  </p>
+</script>
+
+
+<!-- matchHist -->
+<script type="text/javascript">
+  RED.nodes.registerType("match histogram",{
+    category: 'histogram related',
+    color: '#666666',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "img",
+    icon: "",
+    label: function() {
+      return this.name||"match histogram";
+    }
+  });
+</script>
+
+<!-- matchHist -->
+<script type="text/html" data-template-name="match histogram">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div style="background: var(--red-ui-form-tips-background, #ffe);border-radius: 2px;border: 1px solid var(--red-ui-secondary-border-color, #ddd);">
+    Expected keys for the input message:
+    <ul>
+      <li>Image: img</li>
+      <li>Regerence image: img_ref</li>
+    </ul>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="match histogram">
+  <p>TODO
+  </p>
+</script>
+
+<!-- calc2DHist -->
+<script type="text/javascript">
+  RED.nodes.registerType("calculate 2d histogram",{
+    category: 'histogram related',
+    color: '#666666',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      colSpaceType: {value: "RGB"},
+      ch1: {value: "0"},
+      ch2: {value: "1"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "2d hist",
+    icon: "",
+    label: function() {
+      return this.name||"calculate 2d histogram";
+    },
+    oneditprepare: function(){
+      colSpaceTypeHandler(document.getElementById('node-input-colSpaceType').value);
+    }
+  });
+</script>
+
+<script type="text/javascript">
+  function colSpaceTypeHandler(val){
+    if (val == "BGR") {
+      document.getElementById('node-input-ch1').options[0].innerText = "blue";
+      document.getElementById('node-input-ch1').options[1].innerText = "green";
+      document.getElementById('node-input-ch1').options[2].innerText = "red";
+      document.getElementById('node-input-ch2').options[0].innerText = "blue";
+      document.getElementById('node-input-ch2').options[1].innerText = "green";
+      document.getElementById('node-input-ch2').options[2].innerText = "red";
+    } else {
+      document.getElementById('node-input-ch1').options[0].innerText = "hue";
+      document.getElementById('node-input-ch1').options[1].innerText = "saturation";
+      document.getElementById('node-input-ch1').options[2].innerText = "value";
+      document.getElementById('node-input-ch2').options[0].innerText = "hue";
+      document.getElementById('node-input-ch2').options[1].innerText = "saturation";
+      document.getElementById('node-input-ch2').options[2].innerText = "value";
+    }
+  }
+</script>
+
+<!-- calc2DHist -->
+<script type="text/html" data-template-name="calculate 2d histogram">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-colSpaceType"><i class="fa fa-tag"></i> color space</label>
+    <select id="node-input-colSpaceType" oninput="colSpaceTypeHandler(this.value)">
+      <option value="BGR">BGR</option>
+      <option value="HSV">HSV</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-ch1"><i class="fa fa-tag"></i> Channel 1</label>
+    <select id="node-input-ch1">
+      <option value="0">blue</option>
+      <option value="1">green</option>
+      <option value="2">red</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-ch2"><i class="fa fa-tag"></i> Channel 2</label>
+    <select id="node-input-ch2">
+      <option value="0">blue</option>
+      <option value="1">green</option>
+      <option value="2">red</option>
+    </select>
+  </div>
+</script>
+
+  <script type="text/html" data-help-name="calculate 2d histogram">
+    <p>TODO
+    </p>
+  </script>

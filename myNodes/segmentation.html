@@ -1,0 +1,229 @@
+<!--colorQuant-->
+<script type="text/javascript">
+  RED.nodes.registerType("color quantization",{
+    category: "segmentation",
+    color: '#6ed242',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      kappa: {value: "4"},
+      initCenters: {value: "0"},
+      attempts: {value: "1"},
+      eps: {value: "1"},
+      maxIter: {value: "10"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:3,
+    outputLabels: ["quantized image","labels", "colors"],
+    icon: "",
+    label: function() {
+      return this.name||"color quantization";
+    }
+  });
+</script>
+
+
+<!--colorQuant-->
+<script type="text/html" data-template-name="color quantization">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-kappa"><i class="fa fa-tag"></i> Clusters number</label>
+    <input type="number" id="node-input-kappa" min=2>
+  </div>
+  <div class="form-row">
+    <label for="node-input-initCenters"><i class="fa fa-tag"></i> Initial centers</label>
+    <select id="node-input-initCenters">
+      <option value="0">RANDOM_CENTERS</option>
+      <option value="2">KMEANS++_CENTERS</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-attempts"><i class="fa fa-tag"></i> Attempts</label>
+    <input type="number" id="node-input-attempts">
+  </div>
+  <h3>Termination criteria</h3>
+  <div class="form-row">
+    <label for="node-input-eps"><i class="fa fa-tag"></i> Accuracy</label>
+    <input type="number" id="node-input-eps">
+  </div>
+  <div class="form-row">
+    <label for="node-input-maxIter"><i class="fa fa-tag"></i> Max Iterations</label>
+    <input type="number" id="node-input-maxIter">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="color quantization">
+  <p> Color Quantization is the process of reducing number of colors in an image.
+    Also works as segmentation.
+  </p>
+  <p> Arguments:
+    <ul>
+      <li> K: the number of Clusters
+      <li> Termination criteria: the maximum number of iterations and/or the desired accuracy.
+      <li> Attempts: the number of times the algorithm is executed using different
+      <li> Initial labellings. Returns the labels that yield the best compactness.
+    </ul>
+  </p>
+</script>
+
+<!--activeContourSegmentation-->
+<script type="text/javascript">
+  RED.nodes.registerType("active contour segmentation",{
+    category: "segmentation",
+    color: '#6ed242',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      corners: {value: ""},
+      alpha: {value: "0.015"},
+      beta: {value: "10"},
+      gamma: {value: "0.001"},
+      gausSigma: {value: "0"},
+      linePointsStep: {value: "9"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "contour",
+    icon: "",
+    label: function() {
+      return this.name||"active contour segmentation";
+    }
+  });
+</script>
+
+<!--activeContourSegmentation-->
+<!--TODO add the functionality that adds corners to the corner list from your clicks-->
+<script type="text/html" data-template-name="active contour segmentation">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-corners"><i class="fa fa-tag"></i> Corner points</label>
+    <input type="text" id="node-input-corners" placeholder="[[50, 450], [50, 1160], [750, 1160], [700, 450]]">
+  </div>
+  <div class="form-row">
+    <label for="node-input-alpha"><i class="fa fa-tag"></i> α</label>
+    <input type="number" id="node-input-alpha" min=0 step=0.002>
+  </div>
+  <div class="form-row">
+    <label for="node-input-beta"><i class="fa fa-tag"></i> β</label>
+    <input type="number" id="node-input-beta" min=0 step=0.05>
+  </div>
+  <div class="form-row">
+    <label for="node-input-gamma"><i class="fa fa-tag"></i> γ</label>
+    <input type="number" id="node-input-gamma" min=0 step=0.001>
+  </div>
+  <div class="form-row">
+    <label for="node-input-gausSigma"><i class="fa fa-tag"></i> Gaussian blur (0 to disable)</label>
+    <input type="number" id="node-input-gausSigma" min=0 step=0.1>
+  </div>
+  <div class="form-row">
+    <label for="node-input-linePointsStep"><i class="fa fa-tag"></i> Point skipping step</label>
+    <input type="number" id="node-input-linePointsStep" min=1>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="active contour segmentation">
+  <p> The active contour model is a method to fit open or closed splines to
+    lines or edges in an image 1. It works by minimising an energy that is in
+    part defined by the image and part by the spline’s shape: length and
+    smoothness. The minimization is done implicitly in the shape energy and
+    explicitly in the image energy.
+  </p>
+  <p> Arguments:
+    <ul>
+      <li> corner points:
+      <li> α, β: Snake length shape and smoothness parameter. Higher values
+        makes snake contract faster.
+      <li> γ: Explicit time stepping parameter.
+      <li> Gaussian blur σ: The amount of blurring to do before applying the
+        segmentation. Disabled when set to 0.
+      <li> point skipping step: Parameter that affects the point number of the
+        contour. The higher the parameter, the fewer the points.
+    </ul>
+  </p>
+</script>
+
+
+<!--chanVeseSegmentation-->
+<script type="text/javascript">
+  RED.nodes.registerType("morphological chan vese segmentation",{
+    category: "segmentation",
+    color: '#6ed242',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      initLevelSetType: {value: "checkerboard"},
+      numIterations: {value: "200"},
+      smoothing: {value: "3"},
+      l1: {value: "1"},
+      l2: {value: "1"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "mask",
+    icon: "",
+    label: function() {
+      return this.name||"morphological chan vese segmentation";
+    }
+  });
+</script>
+
+<!--chanVeseSegmentation-->
+<script type="text/html" data-template-name="morphological chan vese segmentation">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-initLevelSetType"><i class="fa fa-tag"></i> Initial level set</label>
+    <select id="node-input-initLevelSetType">
+      <option value="checkerboard">checkerboard</option>
+      <option value="disk">disk</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-numIterations"><i class="fa fa-tag"></i> Iterations</label>
+    <input type="number" id="node-input-numIterations" min=1 step=10>
+  </div>
+  <div class="form-row">
+    <label for="node-input-smoothing"><i class="fa fa-tag"></i> Smoothing</label>
+    <input type="number" id="node-input-smoothing" min=0>
+  </div>
+  <div class="form-row">
+    <label for="node-input-l1"><i class="fa fa-tag"></i> l1</label>
+    <input type="number" id="node-input-l1" min=0 step=0.1>
+  </div>
+  <div class="form-row">
+    <label for="node-input-l2"><i class="fa fa-tag"></i> l2</label>
+    <input type="number" id="node-input-l2" min=0 step=0.1>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="morphological chan vese segmentation">
+  <p> Morphological Active Contours without Edges (MorphACWE)
+    Active contours without edges implemented with morphological operators. It
+    can be used to segment objects in images and volumes without well defined
+    borders. It is required that the inside of the object looks different on
+    average than the outside (i.e., the inner area of the object should be
+    darker or lighter than the outer area on average).
+  </p>
+  <p> Arguments:
+    <ul>
+      <li> Initial level set: It defines the method to generate a reasonable
+        initial level set with the shape of the image.
+      <li> Iterations
+      <li> Smoothing: Number of times the smoothing operator is applied per
+        iteration. Reasonable values are around 1-4. Larger values lead to
+        smoother segmentations.
+      <li> l1: Weight parameter for the outer region. If l1 is larger than l2,
+        the outer region will contain a larger range of values than the inner region.
+      <li> l2: Weight parameter for the inner region. If l2 is larger than l1,
+        the inner region will contain a larger range of values than the outer region.
+    </ul>
+  </p>
+</script>

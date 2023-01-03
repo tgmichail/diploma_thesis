@@ -1,0 +1,471 @@
+<!-- blur -->
+<script type="text/javascript">
+  RED.nodes.registerType("blur",{
+    category: 'filtering',
+    color: '#fd9449',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      ksizex: {value: "5"},
+      ksizey: {value: "5"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "filtered img",
+    icon: "",
+    label: function() {
+      return this.name||"blur";
+    }
+  });
+</script>
+
+
+<!-- blur -->
+<script type="text/html" data-template-name="blur">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-ksizex"><i class="fa fa-tag"></i> ksizex</label>
+    <input type="number" id="node-input-ksizex" min=1 step=2>
+  </div>
+  <div class="form-row">
+    <label for="node-input-ksizey"><i class="fa fa-tag"></i> ksizey</label>
+    <input type="number" id="node-input-ksizey" min=1 step=2>
+  </div></script>
+
+<script type="text/html" data-help-name="blur">
+  <p> Blurs an image using the normalized box filter. In other words, it ??
+    sthng with averaging the area. TODO
+
+    ksize = (ksizex, ksizey):  blurring kernel size
+  </p>
+</script>
+
+
+
+<!-- GaussianBlur -->
+<script type="text/javascript">
+  RED.nodes.registerType("gaussian blur",{
+    category: 'filtering',
+    color: '#fd9449',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      ksizex: {value: "5"},
+      ksizey: {value: "5"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "filtered img",
+    icon: "",
+    label: function() {
+      return this.name||"gaussian blur";
+    }
+  });
+</script>
+
+
+<!-- GaussianBlur -->
+<script type="text/html" data-template-name="gaussian blur">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-ksizex"><i class="fa fa-tag"></i> ksizex</label>
+    <input type="number" id="node-input-ksizex" min=1 step=2>
+  </div>
+  <div class="form-row">
+    <label for="node-input-ksizey"><i class="fa fa-tag"></i> ksizey</label>
+    <input type="number" id="node-input-ksizey" min=1 step=2>
+  </div></script>
+
+<script type="text/html" data-help-name="gaussian blur">
+  <p> Blurs an image using a Gaussian filter. The function convolves the source
+    image with the specified Gaussian kernel.
+
+    ksize = (ksizex, ksizey):  Gaussian kernel size. ksizex and ksizey can differ
+     but they both must be positive and odd. Or, they can be zero's and then
+     they are computed from sigma. TODO should I add the sigmas?
+  </p>
+</script>
+
+
+
+<!-- medianBlur -->
+<script type="text/javascript">
+  RED.nodes.registerType("median blur",{
+    category: 'filtering',
+    color: '#fd9449',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      ksize: {value: "5"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "filtered img",
+    icon: "",
+    label: function() {
+      return this.name||"median blur";
+    }
+  });
+</script>
+
+
+<!-- medianBlur -->
+<script type="text/html" data-template-name="median blur">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-ksize"><i class="fa fa-tag"></i> ksize</label>
+    <input type="number" id="node-input-ksize" min=3 step=2>
+  </div></script>
+
+<script type="text/html" data-help-name="median blur">
+  <p> Blurs an image using the median filter. The function smoothes an image
+    using the median filter with the ksize×ksize aperture. Each channel of a
+    multi-channel image is processed independently.
+
+    ksize: Aperture linear size; it must be odd and greater than 1, for example:
+     3, 5, 7 ...
+  </p>
+</script>
+
+
+
+<!-- bilateralFilter -->
+<script type="text/javascript">
+  RED.nodes.registerType("bilateral filter",{
+    category: 'filtering',
+    color: '#fd9449',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      dd: {value: "5"},
+      sigmaColor: {value: "50"},
+      sigmaSpace: {value: "50"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "filtered img",
+    icon: "",
+    label: function() {
+      return this.name||"bilateral filter";
+    }
+  });
+</script>
+
+
+<!-- bilateralFilter -->
+<script type="text/html" data-template-name="bilateral filter">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-dd"><i class="fa fa-tag"></i> dd</label>
+    <input type="number" id="node-input-dd" min=1 max=10>
+  </div>
+  <div class="form-row">
+    <label for="node-input-sigmaColor"><i class="fa fa-tag"></i> sigmaColor</label>
+    <input type="number" id="node-input-sigmaColor" min=3>
+  </div>
+  <div class="form-row">
+    <label for="node-input-sigmaSpace"><i class="fa fa-tag"></i> sigmaSpace</label>
+    <input type="number" id="node-input-sigmaSpace" min=3>
+  </div></script>
+
+<script type="text/html" data-help-name="bilateral filter">
+  <p> Applies the bilateral filter to an image. It can reduce unwanted noise
+    very well while keeping edges fairly sharp. However, it is very slow
+    compared to most filters.
+
+    Sigma values:
+    If they are small (< 10), the filter will not have much effect, whereas if
+    they are large (> 150), they will have a very strong effect, making the
+    image look "cartoonish".
+
+    Filter size:
+    Large filters (d > 5) are very slow, so it is recommended to use d=5 for
+    real-time applications, and perhaps d=9 for offline applications that need
+    heavy noise filtering.
+  </p>
+  <p>
+    Arguments:
+    -dd:  Diameter of each pixel neighborhood that is used during filtering. If it
+     is non-positive, it is computed from sigmaSpace.
+    -sigmaColor:  Filter sigma in the color space. A larger value of the parameter
+     means that farther colors within the pixel neighborhood (see sigmaSpace)
+     will be mixed together, resulting in larger areas of semi-equal color.
+    -sigmaSpace:  Filter sigma in the coordinate space. A larger value of the
+    parameter means that farther pixels will influence each other as long as
+    their colors are close enough (see sigmaColor ). When d>0, it specifies the
+    neighborhood size regardless of sigmaSpace. Otherwise, d is proportional to
+    sigmaSpace.
+
+
+  </p>
+</script>
+
+
+
+<!-- filter2D -->
+<script type="text/javascript">
+  RED.nodes.registerType("general filter",{
+    category: 'filtering',
+    color: '#fd9449',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      ddepth: {value: "-1"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "filtered img",
+    icon: "",
+    label: function() {
+      return this.name||"general filter";
+    }
+  });
+</script>
+
+
+<!-- filter2D -->
+<script type="text/html" data-template-name="general filter">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="general filter">
+  <p> Convolves an image with the kernel.
+
+    The function applies an arbitrary linear filter to an image. When the
+    aperture is partially outside the image, the function interpolates outlier
+    pixel values.
+  </p>
+</script>
+
+
+
+<!-- gradient -->
+<script type="text/javascript">
+  RED.nodes.registerType("gradient",{
+    category: 'filtering',
+    color: '#fd9449',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      filterType: {value: "Laplacian"},
+      dx: {value: "1"},
+      dy: {value: "1"},
+      scharrDerivative: {value: "1"},
+      ksize: {value: "3"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "filtered img",
+    icon: "",
+    label: function() {
+      return this.name||"gradient";
+    },
+    oneditprepare: function(){
+      filterTypeHandler(document.getElementById('node-input-filterType').value);
+    }
+  });
+</script>
+
+<script type="text/javascript">
+  function filterTypeHandler(val){
+    if (val == "Laplacian") {
+      document.getElementById('node-input-dx').parentElement.hidden = true;
+      document.getElementById('node-input-dy').parentElement.hidden = true;
+      document.getElementById('node-input-scharrDerivative').parentElement.hidden = true;
+      document.getElementById('node-input-ksize').parentElement.hidden = false;
+
+    } else if (val == "Sobel") {
+      document.getElementById('node-input-dx').parentElement.hidden = false;
+      document.getElementById('node-input-dy').parentElement.hidden = false;
+      document.getElementById('node-input-scharrDerivative').parentElement.hidden = true;
+      document.getElementById('node-input-ksize').parentElement.hidden = false;
+
+    } else if (val == "Scharr") {
+      document.getElementById('node-input-dx').parentElement.hidden = true;
+      document.getElementById('node-input-dy').parentElement.hidden = true;
+      document.getElementById('node-input-scharrDerivative').parentElement.hidden = false;
+      document.getElementById('node-input-ksize').parentElement.hidden = true;
+    }
+  }
+</script>
+
+<!-- gradient -->
+<script type="text/html" data-template-name="gradient">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-filterType"><i class="fa fa-tag"></i> filter type</label>
+    <select id="node-input-filterType" oninput="filterTypeHandler(this.value)">
+      <option value="Laplacian">Laplacian</option>
+      <option value="Sobel">Sobel</option>
+      <option value="Scharr">Scharr</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-dx"><i class="fa fa-tag"></i> x derivative</label>
+    <input type="number" id="node-input-dx" min=0 max=3>
+  </div>
+  <div class="form-row">
+    <label for="node-input-dy"><i class="fa fa-tag"></i> y derivative</label>
+    <input type="number" id="node-input-dy" min=0 max=3>
+  </div>
+  <div class="form-row">
+    <label for="node-input-scharrDerivative"><i class="fa fa-tag"></i> derivative</label>
+    <select id="node-input-scharrDerivative">
+      <option value="1">x axis</option>
+      <option value="0">y axis</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-ksize"><i class="fa fa-tag"></i> ksize</label>
+    <input type="number" id="node-input-ksize" min=1 step=2 max=7>
+  </div></script>
+
+<script type="text/html" data-help-name="gradient">
+  <p>TODO des notes
+  </p>
+</script>
+
+
+
+<!-- unsharpMask -->
+<script type="text/javascript">
+  RED.nodes.registerType("unsharp masking",{
+    category: 'filtering',
+    color: '#fd9449',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      radius: {value: "1"},
+      amount: {value: "1"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "filtered img",
+    icon: "",
+    label: function() {
+      return this.name||"unsharp masking";
+    }
+  });
+</script>
+
+
+<!-- unsharpMask -->
+<script type="text/html" data-template-name="unsharp masking">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-radius"><i class="fa fa-tag"></i> radius</label>
+    <input type="number" id="node-input-radius" min=1>
+  </div>
+  <div class="form-row">
+    <label for="node-input-amount"><i class="fa fa-tag"></i> amount</label>
+    <input type="number" id="node-input-amount" min=0 step=0.1>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="unsharp masking">
+  <p> Unsharp masking filter.
+    The sharp details are identified as the difference between the original image
+    and its blurred version. These details are then scaled, and added back to the
+    original image:
+    enhanced image = original + amount * (original - blurred)
+  </p>
+  <p> Parameters:
+    <ul>
+      <li>radius: Refers to the sigma parameter of the gaussian filter, used for
+        the blurring.
+      <li>amount: The details will be amplified with this factor. The factor
+        could be 0 or negative. Typically, it is a small positive number, e.g. 1.0.
+    </ul>
+  </p>
+
+</script>
+
+
+
+<!-- Canny -->
+<script type="text/javascript">
+  RED.nodes.registerType("canny ed",{
+    category: 'filtering',
+    color: '#fd9449',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      threshold1: {value: "100"},
+      threshold2: {value: "200"},
+      apertureSize: {value: "3"},
+      L2gradient: {value: false}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "filtered img",
+    icon: "",
+    label: function() {
+      return this.name||"canny ed";
+    }
+  });
+</script>
+
+
+<!-- Canny -->
+<script type="text/html" data-template-name="canny ed">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-threshold1"><i class="fa fa-tag"></i> threshold1</label>
+    <input type="number" id="node-input-threshold1" min=0 max=512>
+  </div>
+  <div class="form-row">
+    <label for="node-input-threshold2"><i class="fa fa-tag"></i> threshold2</label>
+    <input type="number" id="node-input-threshold2" min=0 max=512>
+  </div>
+  <div class="form-row">
+    <label for="node-input-apertureSize"><i class="fa fa-tag"></i> apertureSize</label>
+    <input type="number" id="node-input-apertureSize" min=1 step=2 max =7>
+  </div>
+  <div class="form-row">
+    <label for="node-input-L2gradient"><i class="fa fa-tag"></i> L2gradient</label>
+    <input type="checkbox" id="node-input-L2gradient">
+  </div></script>
+
+<script type="text/html" data-help-name="canny ed">
+  <p> Finds edges in an image using the Canny algorithm.
+
+The function finds edges in the input image and marks them in the output map
+edges using the Canny algorithm. The smallest value between threshold1 and
+threshold2 is used for edge linking. The largest value is used to find initial
+segments of strong edges.
+  </p>
+  <p> Parameters:
+    <ul>
+      <li>threshold1: first threshold for the hysteresis procedure
+      <li>threshold2: second threshold for the hysteresis procedure
+      <li>apertureSize: aperture size for the Sobel operator
+      <li>L2gradient: a flag, indicating whether a more accurate L2 norm should
+        be used to calculate the image gradient magnitude, or whether the default
+        L1 norm is enough
+    </ul>
+  </p>
+</script>

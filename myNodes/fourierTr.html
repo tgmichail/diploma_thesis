@@ -1,0 +1,69 @@
+<!--fourierTransform-->
+<script type="text/javascript">
+  RED.nodes.registerType('fourier transform',{
+    category: 'fourier transform',
+    color: '#880009',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:2,
+    outputLabels: ["magnitude", "phase"],
+    icon: "",
+    label: function() {
+      return this.name||"fourier transform";
+    }
+  });
+</script>
+
+<!--fourierTransform-->
+<script type="text/html" data-template-name="fourier transform">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div style="background: var(--red-ui-form-tips-background, #ffe);border-radius: 2px;border: 1px solid var(--red-ui-secondary-border-color, #ddd);">
+    Expected keys for the input message:
+    <ul>
+      <li>Magnitude: magnitude</li>
+      <li>Phase: phase</li>
+    </ul>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="fourier transform">
+  <p>Applies the Fourier tranform to the input image. Returns the amplitude and the phase</p>
+</script>
+
+
+<!--inverseFourierTransform-->
+<script type="text/javascript">
+  RED.nodes.registerType('inverse fourier transform',{
+    category: 'fourier transform',
+    color: '#880009',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "",
+    icon: "",
+    label: function() {
+      return this.name||"inverse fourier transform";
+    }
+  });
+</script>
+
+<!--inverseFourierTransform-->
+<script type="text/html" data-template-name="inverse fourier transform">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="inverse fourier transform">
+  <p>Applies the inverse Fourier tranform to the input magnitude and phase. Returns an image.</p>
+</script>

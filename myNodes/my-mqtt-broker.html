@@ -1,0 +1,38 @@
+<script type="text/javascript">
+    RED.nodes.registerType('my-mqtt-broker',{
+        category: 'config',
+        defaults: {
+            lname: {value: ""},
+            host: {value:"192.168.0.127", required:true},
+            port: {value:1883, required:true, validate:RED.validators.number()},
+            username: {value:"guest", required:true},
+            password: {value:"guest", required:true}
+        },
+        label: function() {
+            return this.lname||(this.host+":"+this.port);
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="my-mqtt-broker">
+  <div class="form-row">
+      <label for="node-config-input-lname"><i class="fa fa-bookmark"></i> Name</label>
+      <input type="text" id="node-config-input-lname">
+  </div>
+    <div class="form-row">
+        <label for="node-config-input-host"><i class="fa fa-bookmark"></i> Host</label>
+        <input type="text" id="node-config-input-host">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-port"><i class="fa fa-bookmark"></i> Port</label>
+        <input type="text" id="node-config-input-port">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-username"><i class="fa fa-bookmark"></i> Username</label>
+        <input type="text" id="node-config-input-username">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-password"><i class="fa fa-bookmark"></i> Password</label>
+        <input type="text" id="node-config-input-password">
+    </div>
+</script>

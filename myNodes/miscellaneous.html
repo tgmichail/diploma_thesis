@@ -1,0 +1,55 @@
+<!-- depthMap -->
+<script type="text/javascript">
+  RED.nodes.registerType("depth map",{
+    category: 'miscellaneous',
+    color: '#59538F',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      numDisparities: {value: "96"},
+      blockSize: {value: "21"},
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "disparity img",
+    icon: "",
+    label: function() {
+      return this.name||"depth map";
+    }
+  });
+</script>
+
+<!-- depthMap -->
+<script type="text/html" data-template-name="depth map">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-numDisparities"><i class="fa fa-tag"></i> numDisparities</label>
+    <input type="number" id="node-input-numDisparities" min=0 step=16 >
+  </div>
+  <div class="form-row">
+    <label for="node-input-blockSize"><i class="fa fa-tag"></i> blockSize</label>
+    <input type="number" id="node-input-blockSize" min=1 step=2>
+  </div>
+  <div style="background: var(--red-ui-form-tips-background, #ffe);border-radius: 2px;border: 1px solid var(--red-ui-secondary-border-color, #ddd);">
+    Expected keys for the input message:
+    <ul>
+      <li>Left image: img_l</li>
+      <li>Right image: img_r</li>
+    </ul>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="depth map">
+  <p> TODO
+  </p>
+  <p> Arguments:
+    <ul> TODO
+      <li> numDisparities: How many pixels to slide the window over. The larger
+        it is, the larger the range of visible depths, but more computation is required.
+      <li> blockSize: ?
+    </ul>
+  </p>
+</script>

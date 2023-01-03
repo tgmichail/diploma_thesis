@@ -1,0 +1,138 @@
+<!--createMaskFromContour-->
+
+<script type="text/javascript">
+  RED.nodes.registerType('create mask from contour',{
+    category: 'create mask',
+    color: '#0737f7',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+    },
+    inputs:1,
+    outputs:1,
+    icon: "",
+    label: function() {
+      return this.name||"create mask from contour";
+    }
+  });
+</script>
+
+<!--createMaskFromContour-->
+<script type="text/html" data-template-name="create mask from contour">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="create mask from contour">
+  <p>Creates a mask from a given contour and a reference image.</p>
+</script>
+
+<!--createWindow-->
+<script type="text/javascript">
+  RED.nodes.registerType("create window",{
+    category: 'create mask',
+    color: '#0737f7',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      windowType: {value: "tukey"},
+      param: {value: "0.8"}
+      // h skimage yposthrizei klhsh xwris param, ara kserei defaults. poia einai ayta. na ta valw TODO
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "window",
+    icon: "",
+    label: function() {
+      return this.name||"create window";
+    },
+    oneditprepare: function(){
+      windowTypeHandler(document.getElementById('node-input-windowType').value);
+    }
+  });
+</script>
+
+<script type="text/javascript">
+  function windowTypeHandler(val){
+    const paramRow = document.getElementById('node-input-param').parentElement;
+    const paramName = document.getElementById('windowType-param-name');
+    switch (val) {
+      case "kaiser":
+        paramRow.hidden = false;
+        paramName.innerText = "beta";
+        break;
+      case "gaussian":
+        paramRow.hidden = false;
+        paramName.innerText = "standard deviation";
+        break;
+      /*case "slepian":
+        paramRow.hidden = false;
+        paramName.innerText = "width";
+        break;
+      */
+      case "dpss":
+        paramRow.hidden = false;
+        paramName.innerText = "normalized half-bandwidth";
+        break;
+      case "chebwin":
+        paramRow.hidden = false;
+        paramName.innerText = "attenuation";
+        break;
+      case "exponential":
+        paramRow.hidden = false;
+        paramName.innerText = "decay scale";
+        break;
+      case "tukey":
+        paramRow.hidden = false;
+        paramName.innerText = "taper fraction";
+        break;
+      default:
+        paramRow.hidden = true;
+    }
+  }
+</script>
+
+<!-- createWindow -->
+<script type="text/html" data-template-name="create window">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-windowType"><i class="fa fa-tag"></i> window type</label>
+    <select id="node-input-windowType" oninput="windowTypeHandler(this.value)">
+      <option value="boxcar">boxcar</option>
+      <option value="triang">triang</option>
+      <option value="blackman">blackman</option>
+      <option value="hamming">hamming</option>
+      <option value="hann">hann</option>
+      <option value="bartlett">bartlett</option>
+      <option value="flattop">flattop</option>
+      <option value="parzen">parzen</option>
+      <option value="bohman">bohman</option>
+      <option value="blackmanharris">blackmanharris</option>
+      <option value="nuttall">nuttall</option>
+      <option value="barthann">barthann</option>
+      <option value="kaiser">kaiser</option>
+      <option value="gaussian">gaussian</option>
+      <!-- option value="general_gaussian">general_gaussian</option -->
+      <!-- option value="slepian">slepian</option -->
+      <option value="dpss">dpss</option>
+      <option value="chebwin">chebwin</option>
+      <!-- option value="exponential">exponential</option -->
+      <option value="tukey">tukey</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-param"><i class="fa fa-tag"></i>
+      <span id="windowType-param-name"> parameter</span>
+    </label>
+    <input type="number" id="node-input-param" placeholder = TODO add span step=0.1>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="create window">
+  <p> Return an n-dimensional window of size and dimensionality of the input image.
+  </p>
+</script>
