@@ -3,4 +3,4 @@ numpy>=1.23.3
 matplotlib>=3.6.0
 opencv-python>=4.6.0.66
 scikit-image>=0.19.3
-commlib-py>=0.6.4
+commlib-py==0.6.4
