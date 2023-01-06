@@ -128,7 +128,7 @@
     outputs:1,
     icon: "",
     label: function() {
-      return this.name||"generic call";
+      return this.funcName||"generic call";
     },
     oneditprepare: onEditPrepare_GenericCall,
     oneditsave: onEditSave_GenericCall
@@ -184,5 +184,14 @@
       </tfoot>
     </table>
     <input type="hidden" id="node-input-params">
+  </div>
+  <div style="background: var(--red-ui-form-tips-background, #ffe);border-radius: 2px;border: 1px solid var(--red-ui-secondary-border-color, #ddd);">
+    <p>
+      The key(s) of the input msg should be of the format varType_openCVArgName
+      eg img_src, when the var type is in \{img, contour, probMatr, floatMatr,
+      todo complete it\}.
+    </p>
+    <p>
+      Else, the key should be the openCV argument name.
   </div>
 </script>

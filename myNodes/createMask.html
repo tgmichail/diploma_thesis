@@ -36,7 +36,9 @@
     defaults: {
       broker: {value:"", type:"my-mqtt-broker", required:true},
       windowType: {value: "tukey"},
-      param: {value: "0.8"}
+      param: {value: "0.8"},
+      ww: {value: "100"},
+      hh: {value: "100"}
       // h skimage yposthrizei klhsh xwris param, ara kserei defaults. poia einai ayta. na ta valw TODO
     },
     inputs:1,
@@ -129,6 +131,14 @@
       <span id="windowType-param-name"> parameter</span>
     </label>
     <input type="number" id="node-input-param" placeholder = TODO add span step=0.1>
+  </div>
+  <div class="form-row">
+    <label for="node-input-ww"><i class="fa fa-tag"></i> width</label>
+    <input type="number" id="node-input-ww" min=1>
+  </div>
+  <div class="form-row">
+    <label for="node-input-hh"><i class="fa fa-tag"></i> height</label>
+    <input type="number" id="node-input-hh" min=1>
   </div>
 </script>
 

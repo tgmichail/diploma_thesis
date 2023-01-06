@@ -89,8 +89,8 @@ module.exports = function(RED) {
       }
       broker.sendMsg(request, node, msg.times, function callback(response){
 
-        msg.payload = response.data.results.lines;
-        msg.key = 'lines';
+        msg.payload = response.data.results.lineList;
+        msg.key = 'lineList';
         nodeSend(msg);
         nodeDone();
       });
@@ -115,15 +115,15 @@ module.exports = function(RED) {
           dp: parseFloat(config.dp),
           minDist: parseFloat(config.minDist),
           param1: parseInt(config.param1),
-          param2: parseInt(config.param2),
+          param2: parseFloat(config.param2),
           minRadius: parseInt(config.minRadius),
           maxRadius: parseInt(config.maxRadius)
         }
       }
       broker.sendMsg(request, node, msg.times, function callback(response){
 
-        msg.payload = response.data.results.circles;
-        msg.key = 'circles';
+        msg.payload = response.data.results.circleList;
+        msg.key = 'circleList';
         nodeSend(msg);
         nodeDone();
       });

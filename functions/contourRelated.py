@@ -64,12 +64,12 @@ def contourProperties(contour, prop: str = 'all', img_ref: np.ndarray = None) ->
 
 # Contour filtering based on criteria
 # TODO add cv.isContourConvex(cnt)
-def contourFilter(contours: list, criteria: list) -> list:
+def contourFilter(contourList: list, criteria: list) -> list:
 	''' Argument criteria is a list of criteria dicts: {'attr': area/perim/centerx/centery ,
 			'type': top_k/bot_k/percentile/abs, 'thresh': (top)_k/p%/float, 'compare': <= / >= } '''
 
-	n = len(contours)
-	contours = np.array(contours, dtype=object)
+	n = len(contourList)
+	contours = np.array(contourList, dtype=object)
 	# Make an np array of py lists, because they have different lengths. It's ok, we still
 	# want to have a numpy array, to do "contours[props[attr] < thresh] = None"
 	props = {

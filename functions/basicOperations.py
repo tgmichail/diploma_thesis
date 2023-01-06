@@ -62,11 +62,11 @@ def minMaxPoints(probMatr: np.ndarray, getMin: bool, multiPoints: bool, threshol
 	else: # multiPoints
 
 		if getMin:
-			loc = np.where(probMatr<= threshold)
+			loc = np.where(probMatr <= threshold)
 		else:
-			loc = np.where(probMatr>= threshold)
+			loc = np.where(probMatr >= threshold)
 
-		#TODO verify that x is loc[1] and y is loc[0]
+		# x is loc[1] and y is loc[0]
 		points = zip(loc[1].tolist(), loc[0].tolist())	#top left x and y
 		# We need to do .tolist(), to get ints and not np.ints. Because np.ints are not json serializable
 

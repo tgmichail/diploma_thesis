@@ -18,15 +18,17 @@ module.exports = function(RED) {
       let request = {
         funcName: "createWindow",
         params: {
-          img: msg.payload,
-          windowType: windowType
+          windowType: windowType,
+          w: parseInt(config.ww),
+          h: parseInt(config.hh)
         }
       }
+      let timeStats = {};
 
-      broker.sendMsg(request, node, msg.times, function callback(response){
+      broker.sendMsg(request, node, timeStats, function callback(response){
 
-        msg.payload = response.data.results.probMatr;
-        msg.key = 'probMatr';
+        let msg = {payload: response.data.results.probMatr, key: 'probMatr',
+          times: timeStats};
         nodeSend(msg);
         nodeDone();
       });

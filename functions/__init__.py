@@ -2,6 +2,7 @@
 # modules as functions.func()
 
 from functions.basicOperations import *
+from functions.drawing import *
 from functions.contourRelated import *
 from functions.createMask import *
 from functions.detection import *

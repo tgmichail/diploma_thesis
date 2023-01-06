@@ -115,7 +115,8 @@ module.exports = function(RED) {
   RED.nodes.registerType("bilateral filter", BilateralFilter);
 
   //filter2D
-  function GeneralFilter(config) {
+  //exclude it for now, because we dont have the previous node that creates the 2d filter
+  /*function GeneralFilter(config) {
     RED.nodes.createNode(this, config);
     let node = this;
 
@@ -140,7 +141,7 @@ module.exports = function(RED) {
       });
     });
   }
-  RED.nodes.registerType("general filter", GeneralFilter);
+  RED.nodes.registerType("general filter", GeneralFilter);*/
 
   //gradient
   function Gradient(config) {

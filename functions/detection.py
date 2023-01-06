@@ -67,29 +67,29 @@ def HoughLines(img: np.ndarray, threshold : int, rho: float = 1, theta: float = 
 	assertImg(img, gray=True, binary=True)
 
 	if probabilistic:
-		lines = cv.HoughLinesP(img, rho=rho, theta=theta, threshold=threshold,
+		lineList = cv.HoughLinesP(img, rho=rho, theta=theta, threshold=threshold,
 				minLineLength=minLineLength, maxLineGap=maxLineGap)
 
-		if lines is None:
-			return {'lines': []}
+		if lineList is None:
+			return {'lineList': []}
 
-		result = [(pts[0][0:2],pts[0][2:4]) for pts in lines]
-		# lines == [ [(x1,y1,x2,y2)] , [(x1,y1,x2,y2)] , ... ]
+		result = [(pts[0][0:2],pts[0][2:4]) for pts in lineList]
+		# lineList == [ [(x1,y1,x2,y2)] , [(x1,y1,x2,y2)] , ... ]
 		# we now return same format as featureMatching, ie.
 		# result = [ ((x1,y1),(x2,y2)) , ((x1,y1),(x2,y2)) ...]
 
 	else: # not probabilistic
-		lines = cv.HoughLines(img, rho=rho, theta=theta, threshold=threshold)
+		lineList = cv.HoughLines(img, rho=rho, theta=theta, threshold=threshold)
 
-		if lines is None:
-			return {'lines': []}
+		if lineList is None:
+			return {'lineList': []}
 
 		ymax,xmax = img.shape
 
-		# lines is [ [[rho,theta]], [[rho,theta]] ,...]
+		# lineList is [ [[rho,theta]], [[rho,theta]] ,...]
 		# We convert it to the points at the edges of the image, ie. with x=0 or xmax or y=0 or ymax
-		result = [ _convertRhoTheta2Points(line[0][0], line[0][1], xmax, ymax) for line in lines ]
-	return {'lines': result}
+		result = [ _convertRhoTheta2Points(line[0][0], line[0][1], xmax, ymax) for line in lineList ]
+	return {'lineList': result}
 
 
 # Hough circle detection
@@ -98,16 +98,19 @@ def HoughLines(img: np.ndarray, threshold : int, rho: float = 1, theta: float = 
 #					minRadius[, maxRadius]]]]] ) -> circles
 # Takes a grayscale image as input. Better to apply Gaussian blur before.
 def HoughCircles(img, method: int = 3, dp: float = 1.5, minDist: float = 5,
-	param1: int = 100, param2: int = 100, minRadius: int = 1, maxRadius: int = -1):
+	param1: float = 100, param2: float = 100, minRadius: int = 1, maxRadius: int = -1):
 
 	assertImg(img, gray=True)
 
 	circles = cv.HoughCircles(img, method, dp, minDist, param1 = param1,
 		param2 = param2, minRadius = minRadius, maxRadius = maxRadius)
 
+	if circles is None:
+		return {'circleList': []}
+
 	# make the output serializable. And convert float to int
 	circles = circles[0].round().astype('uint32').tolist() # we get circles[0] because it has a useless extra [ ] outside
-	return {'circles': circles}
+	return {'circleList': circles}
 
 # Template Matching - also cvready TODO na thn krathsw h oxi?
 #vlepe arxeio template matching

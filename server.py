@@ -1,8 +1,4 @@
 from commlib.node import Node, TransportType
-
-## Import the Redis transports
-## Imports are lazy handled internally
-#from commlib.transports.redis import ConnectionParameters
 from commlib.transports.mqtt import ConnectionParameters
 
 from commonServerClient import ImageCommandMsg, isCustomInstance, encodeParams, decodeParams
@@ -103,19 +99,17 @@ def on_request(msg: ImageCommandMsg.Request) -> ImageCommandMsg.Response:
 
 
 if __name__ == '__main__':
-	transport = TransportType.MQTT
 	rpc_name = 'image_node' # This is the "topic" of the channel
 
 	# Set broker connection parameters
 	#192.168.0.127, 5672 amqp localhost
-	#(host='155.207.19.251', port=1883) ?? tsardou, 'se2:student', 'student'
-	conn_params = ConnectionParameters(host='localhost', port=1883)
-	conn_params.credentials.username = 'guest'
-	conn_params.credentials.password = 'guest'
+	conn_params = ConnectionParameters(host='155.207.19.251', port=1883)
+	conn_params.credentials.username = 'se2:student'
+	conn_params.credentials.password = 'student'
 
 	# Create an instance of a Node
 	node = Node(node_name='image-node',
-				transport_type=transport,
+				transport_type=TransportType.MQTT,
 				#transport_connection_params
 				connection_params=conn_params,
 				debug=True)

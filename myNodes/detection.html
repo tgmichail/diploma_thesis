@@ -124,7 +124,7 @@ https://docs.opencv.org/4.x/dd/d1a/group__imgproc__feature.html#ga47849c3be0d040
     color: '#e389b9',
     defaults: {
       broker: {value:"", type:"my-mqtt-broker", required:true},
-      threshold: {value: "100"},
+      threshold: {value: "150"},
       rho: {value: "1"},
       theta: {value: "0.01745"},
       probabilistic: {value: false},
@@ -134,7 +134,7 @@ https://docs.opencv.org/4.x/dd/d1a/group__imgproc__feature.html#ga47849c3be0d040
     inputs:1,
     inputLabels: "",
     outputs:1,
-    outputLabels: "line points",
+    outputLabels: "lineList",
     icon: "",
     label: function() {
       return this.name||"hough line detection";
@@ -213,18 +213,18 @@ probabilistic: bool = False, minLineLength: float = 0, maxLineGap: float = 0) ->
     color: '#e389b9',
     defaults: {
       broker: {value:"", type:"my-mqtt-broker", required:true},
-      method: {value: "3"},
+      method: {value: "4"},
       dp: {value: "1.5"},
       minDist: {value: "5"},
       param1: {value: "100"},
-      param1: {value: "100"},
+      param2: {value: "0.9"},
       minRadius: {value: "1"},
       maxRadius: {value: "0"}
     },
     inputs:1,
     inputLabels: "",
     outputs:1,
-    outputLabels: "circles",
+    outputLabels: "circleList",
     icon: "",
     label: function() {
       return this.name||"hough circle detection";
@@ -258,12 +258,12 @@ Circles(img, method, dp, minDist[, circles[, param1[, param2[,
     <input type="number" id="node-input-minDist" min=1 step=1>
   </div>
   <div class="form-row">
-    <label for="node-input-param1"><i class="fa fa-tag"></i> High Canny edge threshold</label>
+    <label for="node-input-param1"><i class="fa fa-tag"></i> high Canny edge threshold (param1)</label>
     <input type="number" id="node-input-param1" min=1 step=10>
   </div>
   <div class="form-row">
     <label for="node-input-param2"><i class="fa fa-tag"></i> Parameter 2</label>
-    <input type="number" id="node-input-param2" min=1 step=10>
+    <input type="number" id="node-input-param2" min=0>
   </div>
   <div class="form-row">
     <label for="node-input-minRadius"><i class="fa fa-tag"></i> Minimum radius</label>

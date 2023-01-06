@@ -1,24 +1,110 @@
-#draw contour, circle, line, bounding box
+import cv2 as cv
+import numpy as np
+import random
 
-def drawContours(img, contourList_contours: contourList, contourIdx: int = -1, color = tuple, thickness: int = 1, lineType: int = 8): -> image
-#cv::LineTypes {cv::FILLED = -1,cv::LINE_4 = 4,cv::LINE_8 = 8,cv::LINE_AA = 16}
+# draw contours OpenCV ready:
+# def drawContours(img, contourList_contours, contourIdx: int = -1,
+#	color = tuple, thickness: int = 1, lineType: int = 8)
+
+def drawContours(img, contourList, index: int = -1,
+	randColors: bool = False, color: tuple = (255, 0, 0), thickness: int = 1, lineType: int = 8):
+
+	if not randColors and img.ndim == 2 and len(color) > 1 and color[0] == color[1] and color[1] == color[2]:
+		# all colors are the same and grayscale image -> keep it grayscale
+		color = color[0]
+	elif img.ndim == 2 and len(color) > 1:
+		img = cv.cvtColor(img, cv.COLOR_GRAY2BGR) # make it colored image
+	
+	if randColors and index < 0:
+		for i in range(len(contourList)):
+			cv.drawContours(img, contours = contourList, contourIdx = i,
+				color = random.choices(range(256), k=3),
+				thickness = thickness, lineType = lineType)
+	elif randColors: # only 1 index
+		cv.drawContours(img, contours = contourList, contourIdx = index,
+			color = random.choices(range(256), k=3),
+			thickness = thickness, lineType = lineType)
+	else:
+		cv.drawContours(img, contours = contourList, contourIdx = index,
+			color = color, thickness = thickness, lineType = lineType)
+
+	return {'img': img}
 
 
-#make them accept circleList, and have a checkbox for random colors.
-def circle(img, center: tuple, radius: int, color: tuple, thickness:int = 1, lineType: int = 8) -> 	img
+def drawLines(img, lineList, randColors: bool = False, color: tuple = None,
+	thickness: int = 1, lineType: int = 8):
 
-#also lineList
-def line(img, pt1_x: int, pt1_y: int, pt2_x: int, pt2_y: int, color: tuple, thickness: int = 1, lineType: int = 8) -> 	img
+	if not randColors and img.ndim == 2 and len(color) > 1 and color[0] == color[1] and color[1] == color[2]:
+		# all colors are the same and grayscale image -> keep it grayscale
+		color = color[0]
+	elif img.ndim == 2 and (randColors or len(color) > 1):
+		img = cv.cvtColor(img, cv.COLOR_GRAY2BGR) # make it colored image
+	
+	if randColors:
+		for line in lineList:
+			cv.line(img, pt1 = line[0], pt2 = line[1], #?? todo fix
+				color = random.choices(range(256), k=3),
+				thickness = thickness, lineType = lineType)
+	else:
+		for line in lineList:
+			cv.line(img, pt1 = line[0], pt2 = line[1], #?? todo fix
+				color = color, thickness = thickness, lineType = lineType)
 
-#also many point sets
-def rectangle(img, pt1_x: int, pt1_y: int, pt2_x: int, pt2_y: int, color: tuple, thickness: int = 1, lineType: int = 8) -> img
+	return {'img': img}
+
+
+def drawCircles(img, circleList, randColors: bool = False, color: tuple = None,
+	thickness: int = 1, lineType: int = 8):
+
+	if not randColors and img.ndim == 2 and len(color) > 1 and color[0] == color[1] and color[1] == color[2]:
+		# all colors are the same and grayscale image -> keep it grayscale
+		color = color[0]
+	elif img.ndim == 2 and (randColors or len(color) > 1):
+		img = cv.cvtColor(img, cv.COLOR_GRAY2BGR) # make it colored image
+	
+	if randColors:
+		for circle in circleList:
+			cv.circle(img, center = circle[0:2], radius = circle[2],
+				color = random.choices(range(256), k=3),
+				thickness = thickness, lineType = lineType)
+	else:
+		for circle in circleList:
+			cv.circle(img, center = circle[0:2], radius = circle[2],
+				color = color, thickness = thickness, lineType = lineType)
+
+	return {'img': img}
+
+
+def drawBBs(img, bbList, randColors: bool = False, color: tuple = None,
+	thickness: int = 1, lineType: int = 8):
+
+	if not randColors and img.ndim == 2 and len(color) > 1 and color[0] == color[1] and color[1] == color[2]:
+		# all colors are the same and grayscale image -> keep it grayscale
+		color = color[0]
+	elif img.ndim == 2 and (randColors or len(color) > 1):
+		img = cv.cvtColor(img, cv.COLOR_GRAY2BGR) # make it colored image
+	
+	if randColors:
+		for bb in bbList:
+			cv.rectangle(img, pt1 = bb[0], pt2 = bb[1], #?? todo fix
+				color = random.choices(range(256), k=3),
+				thickness = thickness, lineType = lineType)
+	else:
+		for bb in bbList:
+			cv.rectangle(img, pt1 = bb[0:2], pt2 = bb[2:4], #?? todo fix
+				color = color, thickness = thickness, lineType = lineType)
+
+	return {'img': img}
+
 
 def drawBBsFromPoints(img, points: list, bbDims: tuple, color: tuple, thickness: int = 1):
 
-	numChannels = img.shape[2] if img.ndim == 3 else 1
-	if len(color) != numChannels:
-		raise Exception('In drawBBsFromPoints, img and color have different number of channels')
-
+	if img.ndim == 2 and len(color) > 1 and color[0] == color[1] and color[1] == color[2]:
+		# all colors are the same and grayscale image -> keep it grayscale
+		color = color[0]
+	elif img.ndim == 2 and len(color) > 1:
+		img = cv.cvtColor(img, cv.COLOR_GRAY2BGR) # make it colored image
+	
 	for point in np.array(points):
 		cv.rectangle(img, pt1=point, pt2=(point + bbDims), color=color, thickness=thickness)
 

@@ -47,8 +47,10 @@ def base64ToImage(inp: str) -> np.ndarray :
 
 	nparr = np.frombuffer(base64.b64decode(inp), np.uint8)
 	img = cv.imdecode(nparr, cv.IMREAD_UNCHANGED)
+
 	if img is None:
 		raise Exception('A given input cannot be decoded as image. Make sure it is valid jpg/png/bmp, base64 encoded')
+
 	return img
 	# or maybe
 	#img = cv.imdecode(nparr,cv.IMREAD_COLOR)
@@ -128,5 +130,14 @@ def encodeParams(outp: dict) -> dict:
 			outp[i] = encodeFloatMatr(outp[i])
 
 		elif isCustomInstance(i, 'contour'):
+			#or isCustomInstance(i, 'points') or
+			#isCustomInstance(i, 'lines') or isCustomInstance(i, 'circles') or
+			#isCustomInstance(i, 'bbPoints') or
+
+			# returns that exist:
+			#colors, hist
+			#lines and circles might need renaming
+			#contour, circle, bbPoints
+			#bbList
 			outp[i] = outp[i].tolist()
 	return outp

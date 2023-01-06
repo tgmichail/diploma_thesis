@@ -99,7 +99,7 @@ module.exports = function(RED) {
       let request = {
         funcName: "contourFilter",
         params: {
-          contours: msg.payload,
+          contourList: msg.payload,
           criteria: criteria
         }
       }

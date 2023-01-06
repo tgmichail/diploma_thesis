@@ -3,7 +3,7 @@ import cv2 as cv
 from skimage.filters import window
 
 # From default window types
-def createWindow(img, windowType: str = "boxcar"):
+def createWindow(windowType: str = "boxcar", w: int = 100, h: int = 100):
 # Window types: - boxcar - triang - blackman - hamming - hann - bartlett -
 # flattop - parzen - bohman - blackmanharris - nuttall - barthann -
 # kaiser (needs beta) - gaussian (needs standard deviation) -
@@ -20,7 +20,8 @@ def createWindow(img, windowType: str = "boxcar"):
 	if isinstance(windowType, list):
 		windowType = tuple(windowType)
 
-	win = window(window_type = windowType, shape = img.shape)
+	win = window(window_type = windowType, shape = (w,h))
+	# TODO it might need 3 channels if it is color
 	#TODO returns: A window of the specified shape. dtype is np.double.
 	return {'probMatr': win}
 

@@ -1,10 +1,258 @@
+<!-- drawContours -->
+<script type="text/javascript">
+  RED.nodes.registerType("draw contours",{
+    category: 'drawing',
+    color: '#e389b9',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      index: {value: "-1"},
+      randColors: {value: false},
+      colorVal: {value: "#000000"},
+      thickness: {value: "1"},
+      lineType: {value: "8"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "img",
+    icon: "",
+    oneditprepare: handleRandColorsCheckbox,
+    label: function() {
+      return this.name||"draw contours";
+    }
+  });
+
+function handleRandColorsCheckbox(){
+  let checked = document.getElementById('node-input-randColors').checked;
+  document.getElementById('node-input-colorVal').parentElement.hidden = !!checked;
+  // hide if randColors is checked
+}
+
+</script>
+
+<!-- drawContours -->
+<script type="text/html" data-template-name="draw contours">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-index"><i class="fa fa-tag"></i> index</label>
+    <input type="number" id="node-input-index" min=-1 step=1>
+  </div>
+  <div class="form-row">
+    <label for="node-input-randColors"><i class="fa fa-tag"></i> randColors</label>
+    <input type="checkbox" id="node-input-randColors" oninput="handleRandColorsCheckbox()">
+  </div>
+  <div class="form-row">
+    <label for="node-input-colorVal"><i class="fa fa-tag"></i> Color</label>
+    <input type="color" id="node-input-colorVal">
+  </div>
+  <div class="form-row">
+    <label for="node-input-thickness"><i class="fa fa-tag"></i> thickness</label>
+    <input type="number" id="node-input-thickness" min=1>
+  </div>
+  <div class="form-row">
+    <label for="node-input-ch"><i class="fa fa-tag"></i> Line type</label>
+    <select id="node-input-ch">
+      <option value="4">LINE_4</option>
+      <option value="8">LINE_8</option>
+      <option value="16">LINE_AA</option>
+    </select>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="draw contours">
+  <p>TODO
+  </p>
+</script>
+
+
+<!-- drawLines -->
+<script type="text/javascript">
+  RED.nodes.registerType("draw lines",{
+    category: 'drawing',
+    color: '#e389b9',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      randColors: {value: false},
+      colorVal: {value: "#000000"},
+      thickness: {value: "1"},
+      lineType: {value: "8"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "img",
+    icon: "",
+    oneditprepare: handleRandColorsCheckbox,
+    label: function() {
+      return this.name||"draw lines";
+    }
+  });
+</script>
+
+<!-- drawLines -->
+<script type="text/html" data-template-name="draw lines">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-randColors"><i class="fa fa-tag"></i> randColors</label>
+    <input type="checkbox" id="node-input-randColors" oninput="handleRandColorsCheckbox()">
+  </div>
+  <div class="form-row">
+    <label for="node-input-colorVal"><i class="fa fa-tag"></i> Color</label>
+    <input type="color" id="node-input-colorVal">
+  </div>
+  <div class="form-row">
+    <label for="node-input-thickness"><i class="fa fa-tag"></i> thickness</label>
+    <input type="number" id="node-input-thickness" min=1>
+  </div>
+  <div class="form-row">
+    <label for="node-input-ch"><i class="fa fa-tag"></i> Line type</label>
+    <select id="node-input-ch">
+      <option value="4">LINE_4</option>
+      <option value="8">LINE_8</option>
+      <option value="16">LINE_AA</option>
+    </select>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="draw lines">
+  <p>TODO
+  </p>
+</script>
+
+
+<!-- drawCircles -->
+<script type="text/javascript">
+  RED.nodes.registerType("draw circles",{
+    category: 'drawing',
+    color: '#e389b9',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      randColors: {value: false},
+      colorVal: {value: "#000000"},
+      thickness: {value: "1"},
+      lineType: {value: "8"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "img",
+    icon: "",
+    oneditprepare: handleRandColorsCheckbox,
+    label: function() {
+      return this.name||"draw circles";
+    }
+  });
+</script>
+
+<!-- drawCircles -->
+<script type="text/html" data-template-name="draw circles">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-randColors"><i class="fa fa-tag"></i> randColors</label>
+    <input type="checkbox" id="node-input-randColors" oninput="handleRandColorsCheckbox()">
+  </div>
+  <div class="form-row">
+    <label for="node-input-colorVal"><i class="fa fa-tag"></i> Color</label>
+    <input type="color" id="node-input-colorVal">
+  </div>
+  <div class="form-row">
+    <label for="node-input-thickness"><i class="fa fa-tag"></i> thickness</label>
+    <input type="number" id="node-input-thickness" min=1>
+  </div>
+  <div class="form-row">
+    <label for="node-input-ch"><i class="fa fa-tag"></i> Line type</label>
+    <select id="node-input-ch">
+      <option value="4">LINE_4</option>
+      <option value="8">LINE_8</option>
+      <option value="16">LINE_AA</option>
+    </select>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="draw circles">
+  <p>TODO
+  </p>
+</script>
+
+
+<!-- drawBBs -->
+<script type="text/javascript">
+  RED.nodes.registerType("draw bbs",{
+    category: 'drawing',
+    color: '#e389b9',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      randColors: {value: false},
+      colorVal: {value: "#000000"},
+      thickness: {value: "1"},
+      lineType: {value: "8"}
+    },
+    inputs:1,
+    inputLabels: "",
+    outputs:1,
+    outputLabels: "img",
+    icon: "",
+    oneditprepare: handleRandColorsCheckbox,
+    label: function() {
+      return this.name||"draw bbs";
+    }
+  });
+</script>
+
+<!-- drawBBs -->
+<script type="text/html" data-template-name="draw bbs">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-randColors"><i class="fa fa-tag"></i> randColors</label>
+    <input type="checkbox" id="node-input-randColors" oninput="handleRandColorsCheckbox()">
+  </div>
+  <div class="form-row">
+    <label for="node-input-colorVal"><i class="fa fa-tag"></i> Color</label>
+    <input type="color" id="node-input-colorVal">
+  </div>
+  <div class="form-row">
+    <label for="node-input-thickness"><i class="fa fa-tag"></i> thickness</label>
+    <input type="number" id="node-input-thickness" min=1>
+  </div>
+  <div class="form-row">
+    <label for="node-input-ch"><i class="fa fa-tag"></i> Line type</label>
+    <select id="node-input-ch">
+      <option value="4">LINE_4</option>
+      <option value="8">LINE_8</option>
+      <option value="16">LINE_AA</option>
+    </select>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="draw bbs">
+  <p>Draw bounding boxes, given the top left, bottom right corners sets.
+  </p>
+</script>
+
+
 <!--drawBBsFromPoints-->
 <script type="text/javascript">
   RED.nodes.registerType('draw bbs from points',{
-    category: 'basic operations',
-    color: '#ffce30',
+    category: 'drawing',
+    color: '#e389b9',
     defaults: {
-      broker: {value:"", type:"my-mqtt-broker", required:true}
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      ww : {value: "10"},
+      hh : {value: "10"},
+      colorVal : {value: "#000000"},
+      thickness : {value: "1"}
     },
     inputs:1,
     inputLabels: "img",
@@ -23,8 +271,26 @@
     <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
     <input id="node-input-broker">
   </div>
+  <div class="form-row">
+    <label for="node-input-ww"><i class="fa fa-tag"></i> bb Width</label>
+    <input type="number" id="node-input-ww" min=1>
+  </div>
+  <div class="form-row">
+    <label for="node-input-hh"><i class="fa fa-tag"></i> bb Height</label>
+    <input type="number" id="node-input-hh" min=1>
+  </div>
+  <div class="form-row">
+    <label for="node-input-colorVal"><i class="fa fa-tag"></i> Color</label>
+    <input type="color" id="node-input-colorVal">
+  </div>
+  <div class="form-row">
+    <label for="node-input-thickness"><i class="fa fa-tag"></i> Line Thickness</label>
+    <input type="number" id="node-input-thickness" min=1>
+  </div>
 </script>
 
 <script type="text/html" data-help-name="draw bbs from points">
-  <p> TODO </p>
+  <p> Draws bounding boxes on img, given the top left points, the width and the
+    height of the bb.
+  </p>
 </script>
