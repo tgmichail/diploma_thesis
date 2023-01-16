@@ -24,10 +24,10 @@ def invFourierTransform(floatMatr_magnitudeSpectrum, probMatr_phaseSpectrum):
 
 	assertImg(floatMatr_magnitudeSpectrum, probMatr_phaseSpectrum, gray=True, sameDimensions=True)
 
-	fshift = np.exp(floatMatr_magnitudeSpectrum - 0.001)*np.exp(1j*probMatr_phaseSpectrum * np.pi)
+	fshift = (np.exp(floatMatr_magnitudeSpectrum) - 0.001)*np.exp(1j*probMatr_phaseSpectrum * np.pi)
 	f = np.fft.ifftshift(fshift)
 	img = np.fft.ifft2(f)
-	img_back = np.real(img).astype('uint8')
+	img_back = np.round(np.real(img)).astype('uint8') # We MUST round, otherwise casting to uint8 adds error
 
 	return {'img': img_back}
 

@@ -1,6 +1,3 @@
-<!--
-This file contains code from https://github.com/rikukissa/node-red-contrib-image-output
-by Riku Rouvila licensed under the MIT license  -->
 
 <!-- findContours -->
 <script type="text/javascript">
@@ -67,68 +64,6 @@ by Riku Rouvila licensed under the MIT license  -->
   </p>
 </script>
 
-
-<!-- contourProperties -->
-<script type="text/javascript">
-  RED.nodes.registerType("contour properties",{
-    category: 'contour related',
-    color: '#bbbbbb',
-    defaults: {
-      broker: {value:"", type:"my-mqtt-broker", required:true},
-      prop: {value: "all"}
-    },
-    inputs:1,
-    inputLabels: "contour (+img_ref?)",
-    outputs:1,
-    outputLabels: "key:value object",
-    icon: "",
-    label: function() {
-      return this.name||"get contour properties";
-    }
-  });
-</script>
-
-<!-- contourProperties -->
-<script type="text/html" data-template-name="contour properties">
-  <div class="form-row">
-    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
-    <input id="node-input-broker">
-  </div>
-  <div class="form-row">
-    <label for="node-input-prop"><i class="fa fa-tag"></i> Property</label>
-    <select id="node-input-prop">
-      <option value="all">All
-      <option value="area">area
-      <option value="perim">perimeter
-      <option value="center">center
-      <option value="centerx">centerx
-      <option value="centery">centery
-      <option value="is_convex">is convex?
-      <option value="aspect_ratio">aspect ratio
-      <option value="extent">extent
-      <option value="solidity">solidity
-      <option value="equiv_diameter">equivalent diameter
-      <option value="orientation">orientation
-      <option value="mean_val">mean value
-      <option value="min_val">min value
-      <option value="max_val">max value
-      <option value="min_loc">location of min value
-      <option value="max_loc">location of max value
-    </select>
-  </div>
-</script>
-
-<script type="text/html" data-help-name="contour properties">
-  <p> Calculates the contour properties, specified by the user.
-
-  These can be: area, perimeter, center, centerx, centery, is convex?, aspect ratio,
-  extent, solidity, equivalent diameter, orientation
-  </p>
-  <p>
-  And if a reference image is provided, we can also calculate: mean value, min value,
-  max value, location of min value, location of max value
-  </p>
-</script>
 
 
 <!-- contourFilter -->
@@ -279,6 +214,54 @@ by Riku Rouvila licensed under the MIT license  -->
 </script>
 
 
+<!-- boundingShape -->
+<script type="text/javascript">
+  RED.nodes.registerType("bounding shape",{
+    category: 'contour related',
+    color: '#bbbbbb',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      shape: {value: "Rectangle"}
+    },
+    inputs:1,
+    inputLabels: "contour",
+    outputs:1,
+    outputLabels: "contour/center and radius",  //bounding circle returns something else fix TODO
+    icon: "",
+    label: function() {
+      return this.name||"bounding shape";
+    }
+  });
+</script>
+
+<!-- boundingShape -->
+<script type="text/html" data-template-name="bounding shape">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-shape"><i class="fa fa-tag"></i> Shape</label>
+    <select id="node-input-shape">
+      <option value="Rectangle">Rectangle</option>
+      <option value="MinAreaRectangle">MinAreaRectangle</option>
+      <option value="Circle">Circle</option>
+      <option value="Triangle">Triangle</option>
+    </select>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="bounding shape">
+  <p> Finds the bounding shape of a given contour or of the non-zero pixels on
+    a gray-scale image.
+    The shape can be either an up-right bounding rectangle (Rectangle), a
+    rotated rectangle of the minimum area enclosing the input 2D point set
+    (MinAreaRectangle), a circle of the minimum area enclosing the 2D point set
+    (Circle), or a triangle of minimum area enclosing the 2D point set (Triangle).
+  </p>
+</script>
+
+
 <!-- approxPolyDP -->
 <script type="text/javascript">
   RED.nodes.registerType("contour approximate",{
@@ -290,9 +273,9 @@ by Riku Rouvila licensed under the MIT license  -->
       closed: {value: true}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "contour",
     outputs:1,
-    outputLabels: "contour/curve",
+    outputLabels: "contour",
     icon: "",
     label: function() {
       return this.name||"contour approximate";
@@ -328,6 +311,71 @@ by Riku Rouvila licensed under the MIT license  -->
      vertices are connected). Otherwise, it is not closed.
   </p>
 </script>
+
+
+<!-- contourProperties -->
+<script type="text/javascript">
+  RED.nodes.registerType("contour properties",{
+    category: 'contour related',
+    color: '#bbbbbb',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      prop: {value: "all"}
+    },
+    inputs:1,
+    inputLabels: "contour (+img_ref?)",
+    outputs:1,
+    outputLabels: "key:value object",
+    icon: "",
+    label: function() {
+      return this.name||"get contour properties";
+    }
+  });
+</script>
+
+<!-- contourProperties -->
+<script type="text/html" data-template-name="contour properties">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-prop"><i class="fa fa-tag"></i> Property</label>
+    <select id="node-input-prop">
+      <option value="all">All
+      <option value="area">area
+      <option value="perim">perimeter
+      <option value="center">center
+      <option value="centerx">centerx
+      <option value="centery">centery
+      <option value="is_convex">is convex?
+      <option value="aspect_ratio">aspect ratio
+      <option value="extent">extent
+      <option value="solidity">solidity
+      <option value="equiv_diameter">equivalent diameter
+      <option value="orientation">orientation
+      <option value="mean_val">mean value
+      <option value="min_val">min value
+      <option value="max_val">max value
+      <option value="min_loc">location of min value
+      <option value="max_loc">location of max value
+    </select>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="contour properties">
+  <p> Calculates the contour properties, specified by the user.
+
+  These can be: area, perimeter, center, centerx, centery, is convex?, aspect ratio,
+  extent, solidity, equivalent diameter, orientation
+  </p>
+  <p>
+  And if a reference image is provided, we can also calculate: mean value, min value,
+  max value, location of min value, location of max value
+  </p>
+</script>
+
+
 
 
 <!-- matchShapes -->
@@ -382,260 +430,3 @@ by Riku Rouvila licensed under the MIT license  -->
   </p>
 </script>
 
-
-<!-- boundingShape -->
-<script type="text/javascript">
-  RED.nodes.registerType("bounding shape",{
-    category: 'contour related',
-    color: '#bbbbbb',
-    defaults: {
-      broker: {value:"", type:"my-mqtt-broker", required:true},
-      shape: {value: "Rectangle"}
-    },
-    inputs:1,
-    inputLabels: "",
-    outputs:1,
-    outputLabels: "list of points/center and radius",  //bounding circle returns something else fix TODO
-    icon: "",
-    label: function() {
-      return this.name||"bounding shape";
-    }
-  });
-</script>
-
-<!-- boundingShape -->
-<script type="text/html" data-template-name="bounding shape">
-  <div class="form-row">
-    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
-    <input id="node-input-broker">
-  </div>
-  <div class="form-row">
-    <label for="node-input-shape"><i class="fa fa-tag"></i> Shape</label>
-    <select id="node-input-shape">
-      <option value="Rectangle">Rectangle</option>
-      <option value="MinAreaRectangle">MinAreaRectangle</option>
-      <option value="Circle">Circle</option>
-      <option value="Triangle">Triangle</option>
-    </select>
-  </div>
-</script>
-
-<script type="text/html" data-help-name="bounding shape">
-  <p> Finds the bounding shape of a given contour or of the non-zero pixels on
-    a gray-scale image.
-    The shape can be either an up-right bounding rectangle (Rectangle), a
-    rotated rectangle of the minimum area enclosing the input 2D point set
-    (MinAreaRectangle), a circle of the minimum area enclosing the 2D point set
-    (Circle), or a triangle of minimum area enclosing the 2D point set (Triangle).
-  </p>
-</script>
-
-
-<!-- Create Contour -->
-<script type="text/javascript">
-const DEFAULT_IMAGE_WIDTH = 160;
-
-RED.nodes.registerType('create contour', {
-  category: 'contour related',
-  color: '#bbbbbb',
-  defaults: {
-    width: {
-      value: DEFAULT_IMAGE_WIDTH,
-      required: true
-    },
-    imgField: {
-      value: "payload",
-      required: true
-    }
-  },
-  inputs: 1,
-  outputs: 1,
-  icon: "font-awesome/fa-image",
-  label: function () {
-    return this.name || "create contour";
-  },
-  inputLabels: 'image',
-  outputLabels: 'contour',
-  button: {
-    onclick: function () {
-      const label = this.name || "create contour";
-      let node = this;
-
-      $.ajax({
-        url: `created_contour/${node.id}`,
-        type: "POST",
-        data: {contour: JSON.stringify(contours[node.id])},
-        success: function (resp, textStatus, xhr) {
-
-          if (xhr.status == 200) {
-            console.log("Success: " + resp + ": " + label);
-            removeImageAndBubble(node.id);
-          }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-          RED.notify(`<strong>Error</strong>: (${textStatus}) ${errorThrown}`, "error");
-        }
-      });
-    }
-  },
-  oneditprepare: function(){
-    let node = this;
-    const txtarea = document.getElementById('contour-txtarea');
-
-    txtarea.value = contours[this.id].join('\n');
-
-    document.getElementById('clear-contour-pts').onclick = function(){
-      contours[node.id] = [];
-      txtarea.value = '';
-    };
-  }
-});
-
-const latestImages = {}
-const contours = {}
-
-let addPointToContour = function(event, id){
-  const $img = document.getElementById("create-contour-img-" + id)
-  const scale = parseFloat($img.getAttribute('data-scale'));
-  const imgPos = $img.getBoundingClientRect();
-  const rel_x = event.clientX - imgPos.x;
-  const rel_y = event.clientY - imgPos.y;
-  /* event.pageX and img.offsetLeft would be the abs position from the top left of the document. We
-     cannot use this because the flow editor is a big svg and the elements inside can't have offsetLeft.
-     So we use event.clientX and img.getBoundingClientRect().x, which are the position from the
-     top left of the browser view. */
-
-  let newPoint = [Math.round(rel_x * scale), Math.round(rel_y * scale)];
-
-  if (contours[id])
-    contours[id].push(newPoint);
-  else
-    contours[id] = [newPoint];
-}
-
-let removeImageAndBubble = function(id){
-  const $img = document.getElementById("create-contour-img-" + id);
-  const $bubble = document.getElementById("create-contour-bubble-" + id);
-
-  $img && $img.remove();
-  $bubble && $bubble.remove();
-}
-
-let redraw = function(node) {
-  const id = node.id;
-  removeImageAndBubble(id);
-
-  if (latestImages[id]) {
-    render(id, latestImages[id], node);
-  }
-}
-
-let render = function(id, data, node) {
-  let i = new Image();
-  let $img = document.getElementById("create-contour-img-" + id)
-  if (!$img) {
-    const $container = document.getElementById(id)
-    if (!$container) { return }
-
-    const bubble = document.createElementNS("http://www.w3.org/2000/svg", 'polyline')
-    bubble.setAttribute('id', "create-contour-bubble-" + id)
-    bubble.setAttribute('style', 'fill:#E8F0E8')
-    bubble.setAttribute('stroke', '#999999')
-    $container.insertBefore(bubble, $container.lastChild.nextSibling)
-
-    const img = document.createElementNS("http://www.w3.org/2000/svg", 'image')
-    img.setAttribute('id', "create-contour-img-" + id)
-    img.setAttribute('x', '0')
-    img.setAttribute('y', '45')
-    img.setAttribute('width', node.width || DEFAULT_IMAGE_WIDTH)
-    img.addEventListener("click", function(event){addPointToContour(event, id); });
-    img.style.cursor = 'copy';
-    $container.insertBefore(img, $container.lastChild.nextSibling);
-    $img = img;
-  }
-
-  i.onload = function () {
-    $img.setAttribute('data-scale', i.width / node.width);
-    $img.setAttribute('height', node.width * i.height / i.width)
-    const bubbleId = $img.id.replace("img", "bubble");
-    const $bubble = document.getElementById(bubbleId)
-    let imgBbox = {}
-    imgBbox.x = 0;
-    imgBbox.y = 45;
-    imgBbox.width = node.width || DEFAULT_IMAGE_WIDTH;
-    imgBbox.height = parseInt(node.width * i.height / i.width);
-    const left = imgBbox.x
-    const top = imgBbox.y + 2
-    const right = imgBbox.x + imgBbox.width
-    const bottom = imgBbox.y + imgBbox.height
-    const points =
-      (left + 4) + "," + (top - 17) + " " +
-      (left + 4) + "," + top + " " +
-      right + "," + top + " " +
-      right + "," + bottom + " " +
-      left + "," + bottom + " " +
-      left + "," + (top - 21)
-    $bubble.setAttribute('points', points)
-  }
-
-  if (data.startsWith("http")) {
-    $img.setAttribute('href', data);
-    i.src = data;
-  } else {
-    $img.setAttribute('href', "data:image/png;base64," + data);
-    i.src = "data:image/png;base64," + data;
-  }
-}
-
-RED.events.on("editor:save", redraw);
-
-RED.comms.subscribe('create_contour', function (event, data) {
-  if (data.hasOwnProperty("data")) {
-    latestImages[data.id] = data.data;
-    render(data.id, data.data, RED.nodes.node(data.id));
-  }
-});
-</script>
-
-<script type="text/html" data-template-name="create contour">
-<div class="form-row">
-  <label for="node-input-imgField"><i class="fa fa-ellipsis-h"></i> Property where image is</label>
-  msg.<input type="text" id="node-input-imgField" style="width:60%">
-</div>
-<div class="form-row">
-  <label for="node-input-width"><i class="fa fa-arrows-h"></i> Image preview width</label>
-  <input type="number" id="node-input-width" min="40">
-</div>
-<div>
-  <label for="node-input-width"><i class="fa fa-arrows-h"></i> Contour points</label>
-  <textarea disabled id="contour-txtarea"></textarea>
-  <button id="clear-contour-pts" type="button">Clear points</button>
-</div>
-</script>
-
-<script type="text/html" data-help-name="create contour">
-<p>TODO Simple image output node. Useful for previewing results of face detection, object recognition, etc.</p>
-<p>The button on the node can be used to enable or disable the image preview.
-It is recommended (for performance) to disable or remove any Image-Output nodes that are not being used.</p>
-<p>Expects the selected msg property (default <code>msg.payload</code>) to contain one of the following formats:
-<ul>
-    <li>A base64 encoded string</li>
-    <li>A buffer</li>
-    <li>A Jimp image object</li>
-    <li>A url to an image</li>
-</ul>
-</p>
-<p>Sending a blank or null payload will remove/hide the preview panel.</p>
-<p><strong>Width:</strong><br/>
-The width (in pixels) that the image needs to be displayed in the flow.</p>
-<p><strong>Resize images on server side:</strong><br/>
-When too much data is pushed to the browser, the flow editor can become unresponse.
-<ul>
-    <li>When activated, the images will be resized (to the specified width) on the server side.  Then those small thumbnail images will be send to the browser, to reduce the bandwith.</li>
-    <li>When not activated, the (original) large images will be send to the browser.  Once they arrive there, the browser will resize them to the specified width.</li>
-</ul>
-<p><strong>Allow image passthrough:</strong><br/>
-When selected this adds an output wire to the node in order to pass the original message through to a following node.
-This performs better than forking the wires, however it does remove the enable/disable button.
-</p>
-</script>

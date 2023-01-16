@@ -9,16 +9,15 @@
       ksizey: {value: "5"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:1,
-    outputLabels: "filtered img",
+    outputLabels: "img",
     icon: "",
     label: function() {
       return this.name||"blur";
     }
   });
 </script>
-
 
 <!-- blur -->
 <script type="text/html" data-template-name="blur">
@@ -36,10 +35,24 @@
   </div></script>
 
 <script type="text/html" data-help-name="blur">
-  <p> Blurs an image using the normalized box filter. In other words, it ??
-    sthng with averaging the area. TODO
-
-    ksize = (ksizex, ksizey):  blurring kernel size
+  <p> Blurs an image using the normalized box filter. In other words, it replaces each pixel's value
+    with the average value of a rectangle area centered on that pixel.
+  </p>
+  <p>Inputs:
+    <ul>
+      <li>msg.payload: An image, grayscale or colored
+    </ul>
+  </p>
+  <p>Parameters:
+    <ul>
+      <li>ksize = (ksizex, ksizey): The blurring kernel size. Ie. the dimensions
+        of the rectangle used for calculating the average value.
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: The output image
+    </ul>
   </p>
 </script>
 
@@ -56,16 +69,15 @@
       ksizey: {value: "5"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:1,
-    outputLabels: "filtered img",
+    outputLabels: "img",
     icon: "",
     label: function() {
       return this.name||"gaussian blur";
     }
   });
 </script>
-
 
 <!-- GaussianBlur -->
 <script type="text/html" data-template-name="gaussian blur">
@@ -85,10 +97,22 @@
 <script type="text/html" data-help-name="gaussian blur">
   <p> Blurs an image using a Gaussian filter. The function convolves the source
     image with the specified Gaussian kernel.
-
-    ksize = (ksizex, ksizey):  Gaussian kernel size. ksizex and ksizey can differ
-     but they both must be positive and odd. Or, they can be zero's and then
-     they are computed from sigma. TODO should I add the sigmas?
+  </p>
+  <p>Inputs:
+    <ul>
+      <li>msg.payload: An image, grayscale or colored
+    </ul>
+  </p>
+  <p>Parameters:
+    <ul>
+      <li>ksize = (ksizex, ksizey):  Gaussian kernel size. ksizex and ksizey can differ
+     but they both must be positive and odd.
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: The output image
+    </ul>
   </p>
 </script>
 
@@ -104,16 +128,15 @@
       ksize: {value: "5"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:1,
-    outputLabels: "filtered img",
+    outputLabels: "img",
     icon: "",
     label: function() {
       return this.name||"median blur";
     }
   });
 </script>
-
 
 <!-- medianBlur -->
 <script type="text/html" data-template-name="median blur">
@@ -130,9 +153,21 @@
   <p> Blurs an image using the median filter. The function smoothes an image
     using the median filter with the ksize×ksize aperture. Each channel of a
     multi-channel image is processed independently.
-
-    ksize: Aperture linear size; it must be odd and greater than 1, for example:
-     3, 5, 7 ...
+  </p>
+  <p>Inputs:
+    <ul>
+      <li>msg.payload: An image, grayscale or colored
+    </ul>
+  </p>
+  <p>Parameters:
+    <ul>
+      <li>ksize [int]: Aperture linear size. Must be odd and positive.
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: The output image
+    </ul>
   </p>
 </script>
 
@@ -150,16 +185,15 @@
       sigmaSpace: {value: "50"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:1,
-    outputLabels: "filtered img",
+    outputLabels: "img",
     icon: "",
     label: function() {
       return this.name||"bilateral filter";
     }
   });
 </script>
-
 
 <!-- bilateralFilter -->
 <script type="text/html" data-template-name="bilateral filter">
@@ -184,31 +218,40 @@
   <p> Applies the bilateral filter to an image. It can reduce unwanted noise
     very well while keeping edges fairly sharp. However, it is very slow
     compared to most filters.
-
-    Sigma values:
+  </p><p>
+    Sigma values:</br>
     If they are small (< 10), the filter will not have much effect, whereas if
     they are large (> 150), they will have a very strong effect, making the
     image look "cartoonish".
-
-    Filter size:
+  </p><p>
+    Filter size:</br>
     Large filters (d > 5) are very slow, so it is recommended to use d=5 for
     real-time applications, and perhaps d=9 for offline applications that need
     heavy noise filtering.
   </p>
-  <p>
-    Arguments:
-    -dd:  Diameter of each pixel neighborhood that is used during filtering. If it
-     is non-positive, it is computed from sigmaSpace.
-    -sigmaColor:  Filter sigma in the color space. A larger value of the parameter
+  <p>Inputs:
+    <ul>
+      <li>msg.payload: An image, grayscale or colored
+    </ul>
+  </p>
+  <p> Parameters:
+    <ul>
+      <li>dd [int]: Diameter of each pixel neighborhood that is used during filtering. If it
+        is not positive, it is computed from sigmaSpace.
+      <li>sigmaColor [float]:  Filter sigma in the color space. A larger value of the parameter
      means that farther colors within the pixel neighborhood (see sigmaSpace)
      will be mixed together, resulting in larger areas of semi-equal color.
-    -sigmaSpace:  Filter sigma in the coordinate space. A larger value of the
+      <li>sigmaSpace [float]:  Filter sigma in the coordinate space. A larger value of the
     parameter means that farther pixels will influence each other as long as
     their colors are close enough (see sigmaColor ). When d>0, it specifies the
     neighborhood size regardless of sigmaSpace. Otherwise, d is proportional to
     sigmaSpace.
-
-
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: The output image
+    </ul>
   </p>
 </script>
 
@@ -269,9 +312,9 @@
       ksize: {value: "3"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:1,
-    outputLabels: "filtered img",
+    outputLabels: "img",
     icon: "",
     label: function() {
       return this.name||"gradient";
@@ -340,7 +383,24 @@
   </div></script>
 
 <script type="text/html" data-help-name="gradient">
-  <p>TODO des notes
+  <p>Calculates image derivatives using a Sober, Scharr or Laplacian operator.
+  </p>
+  <p>Inputs:
+    <ul>
+      <li>msg.payload: An image, grayscale or colored
+    </ul>
+  </p>
+  <p> Parameters:
+    <ul>
+      <li>x or y derivative [int]: order of the derivative in the x (or y) dimension. Only for Sobel type.
+      <li>ksize [int]: Size of the kernel for calculating the derivative.
+        Only for Sobel and Laplacian. Must be positive and odd.
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: The output image
+    </ul>
   </p>
 </script>
 
@@ -357,16 +417,15 @@
       amount: {value: "1"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:1,
-    outputLabels: "filtered img",
+    outputLabels: "img",
     icon: "",
     label: function() {
       return this.name||"unsharp masking";
     }
   });
 </script>
-
 
 <!-- unsharpMask -->
 <script type="text/html" data-template-name="unsharp masking">
@@ -380,7 +439,7 @@
   </div>
   <div class="form-row">
     <label for="node-input-amount"><i class="fa fa-tag"></i> amount</label>
-    <input type="number" id="node-input-amount" min=0 step=0.1>
+    <input type="number" id="node-input-amount" step="0.1">
   </div>
 </script>
 
@@ -388,25 +447,32 @@
   <p> Unsharp masking filter.
     The sharp details are identified as the difference between the original image
     and its blurred version. These details are then scaled, and added back to the
-    original image:
-    enhanced image = original + amount * (original - blurred)
+    original image. </p>
+  <pre>enhanced image = original + amount * (original - blurred)</pre>
+  <p>Inputs:
+    <ul>
+      <li>msg.payload: An image, grayscale or colored
+    </ul>
   </p>
   <p> Parameters:
     <ul>
-      <li>radius: Refers to the sigma parameter of the gaussian filter, used for
-        the blurring.
-      <li>amount: The details will be amplified with this factor. The factor
-        could be 0 or negative. Typically, it is a small positive number, e.g. 1.0.
+      <li>radius [float]: the sigma parameter of the gaussian filter, used for the blurring.
+      <li>amount [float]: The details will be amplified with this factor. The factor
+        could be 0 or negative. Typically, it is a small positive number, e.g. 1.0
     </ul>
   </p>
-
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: The output image
+    </ul>
+  </p>
 </script>
 
 
 
 <!-- Canny -->
 <script type="text/javascript">
-  RED.nodes.registerType("canny ed",{
+  RED.nodes.registerType("canny edge detection",{
     category: 'filtering',
     color: '#fd9449',
     defaults: {
@@ -417,19 +483,18 @@
       L2gradient: {value: false}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:1,
-    outputLabels: "filtered img",
+    outputLabels: "img",
     icon: "",
     label: function() {
-      return this.name||"canny ed";
+      return this.name||"canny edge detection";
     }
   });
 </script>
 
-
 <!-- Canny -->
-<script type="text/html" data-template-name="canny ed">
+<script type="text/html" data-template-name="canny edge detection">
   <div class="form-row">
     <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
     <input id="node-input-broker">
@@ -451,22 +516,32 @@
     <input type="checkbox" id="node-input-L2gradient">
   </div></script>
 
-<script type="text/html" data-help-name="canny ed">
-  <p> Finds edges in an image using the Canny algorithm.
-
+<script type="text/html" data-help-name="canny edge detection">
+  <p>Finds edges in an image using the Canny algorithm.
+  </p><p>
 The function finds edges in the input image and marks them in the output map
 edges using the Canny algorithm. The smallest value between threshold1 and
 threshold2 is used for edge linking. The largest value is used to find initial
 segments of strong edges.
   </p>
+  <p>Inputs:
+    <ul>
+      <li>msg.payload: The input image
+    </ul>
+  </p>
   <p> Parameters:
     <ul>
-      <li>threshold1: first threshold for the hysteresis procedure
-      <li>threshold2: second threshold for the hysteresis procedure
-      <li>apertureSize: aperture size for the Sobel operator
+      <li>threshold1 [float]: first threshold for the hysteresis procedure
+      <li>threshold2 [float]: second threshold for the hysteresis procedure
+      <li>apertureSize [int] : aperture size for the Sobel operator
       <li>L2gradient: a flag, indicating whether a more accurate L2 norm should
         be used to calculate the image gradient magnitude, or whether the default
         L1 norm is enough
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: A grayscale, 8-bit image
     </ul>
   </p>
 </script>

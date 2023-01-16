@@ -88,8 +88,8 @@
 
     // add entries in the loadNode dropdown
     const loadNode_dropdown = document.getElementById('loadNode')
-    for (let paramName in imgNodesSavedConfigs)
-      loadNode_dropdown.options.add(new Option(paramName))
+    for (let funcName in imgNodesSavedConfigs)
+      loadNode_dropdown.options.add(new Option(funcName))
   }
 
   function onLoadNodeDropdown(nodeType){
@@ -141,7 +141,7 @@
     <input id="node-input-broker">
   </div>
   <div class="form-row">
-    <label for="loadNode"><i class="fa fa-tag"></i> Load a saved function and parameter names</label>
+    <label for="loadNode"><i class="fa fa-tag"></i> Load saved function</label>
     <select id="loadNode" oninput="onLoadNodeDropdown(this.value)"><option>-</select>
   </div>
   <div class="form-row">
@@ -150,10 +150,10 @@
   </div>
   <div class="form-row">
     <label for="node-input-outputs"><i class="fa fa-tag"></i> Outputs</label>
-    <input type="number" id="node-input-outputs" min=0>
+    <input type="number" id="node-input-outputs" placeholder="2" min=0>
   </div>
   <div class="form-row">
-    <label for="node-input-outputLabel"><i class="fa fa-tag"></i> Custom output type (optional)</label>
+    <label for="node-input-outputLabel"><i class="fa fa-tag"></i> Custom output type</label>
     <input type="text" id="node-input-outputLabel" placeholder="returnCode,img">
   </div>
   <div class="form-row">Parameters:
@@ -185,13 +185,79 @@
     </table>
     <input type="hidden" id="node-input-params">
   </div>
-  <div style="background: var(--red-ui-form-tips-background, #ffe);border-radius: 2px;border: 1px solid var(--red-ui-secondary-border-color, #ddd);">
+  <div style="background: var(--red-ui-form-tips-background, #ffe);border-radius: 2px;border: 1px solid var(--red-ui-secondary-border-color, #ddd);width: 430px">
     <p>
-      The key(s) of the input msg should be of the format varType_openCVArgName
-      eg img_src, when the var type is in \{img, contour, probMatr, floatMatr,
-      todo complete it\}.
+      The key(s) of the input msg should be of the format:<br> varType_funcArgName,
+      eg img_src, <br>when the var type is in [img, contour, probMatr, floatMatr,
+      todo complete it].
     </p>
     <p>
-      Else, the key should be the openCV argument name.
+      Else, the key should be just the function argument name.
   </div>
+</script>
+
+<script type="text/html" data-help-name="generic call">
+  <p> Accesses all the OpenCV functions, and also all the implemented ones in
+    remote-image-processing package.
+  </p><p>
+    It combines the msg.payload and the parameters given in the configuration
+    window, to form the arguments that will be passed on to function funcName.
+  </p><p>
+    In order for the function to run succesfully, all of the parameter names and
+    types should be set correctly by the user. When this happens, the function is
+    saved and can be reaccessed from the Load saved function list.
+  </p>
+  <h3>Inputs</h3>
+    If only one input is expected on the msg:
+    <ol>
+      <li>payload: The value of that argument eg the img, probMatr, contour
+      <li>key: The function's argument name, possibly combined with the variable type.
+        <p>
+          The name should be in the format varType_cvArgName,</br>
+          when the var type is among [img, points, probMatr, floatMatr, contour,
+          contourList, line, lineList, circle, circleList].
+        </p><p>
+          If the variable type is not on this list, eg is a scalar, it should be
+          named just as the cv argument's name.
+        </p></li>
+    </ol>
+    If more than one inputs are expected from the msg, a Change and a Join node
+    should be used before, to create an input message of the form:
+    <ol>
+      <li>payload.key1: arg1
+      <li>payload.key2: arg2
+      <li>etc
+    </ol>
+    Again, the keys should follow the previous convention
+  <h3>Arguments</h3>
+  <ol>
+    <li>Load saved function: Optionally, if we want to load a saved function.
+    <li>Function name
+    <li>Outputs: Number of the outputs. Should be set with the exact number the
+      OpenCV function returns.
+    <li>Custom output type: The output variable's type.
+      <p>
+        If the variable type is one of [img, points, contour, contourList, line,
+        lineList, circle, circleList], it should be set as this name. If it's not
+        on this list, eg it's scalar, it can be named however you want.
+      </p><p>
+        If the outputs are more than one, the types should be comma separated,
+        with no spaces.
+      <p></li>
+    <li>Parameters:
+      <ul>
+        <li>key: The names of the arguments that are not set by the msg.payload.
+          The naming follows the same convention as at msg.key.
+        <li>value: If it is not scalar or string, it should be given as JSON
+          encoded array or object.
+      </ul>
+  </ol>
+  <h3>Outputs</h3>
+    Variable number of outputs, as specified in the Outputs tab. Each one of them
+    is on the form:
+    <ol>
+      <li>payload: The result
+      <li>key: The custom names given by the user. In case of the remote-image-processing
+        package functions, what is set by the function itself.
+    </ol>
 </script>

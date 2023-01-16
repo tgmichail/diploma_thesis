@@ -10,7 +10,6 @@ class ImageCommandMsg(RPCMessage):
 		funcName: str
 		params: dict
 		#params: dict aka key value pairs, wste na einai h morfh twn input koinh
-		#TODO mhpws xreiastei na yposthriksoume kapoio key pou einai lista apo eikones
 		returnLabel: str = None
 
 	@dataclass
@@ -24,19 +23,6 @@ class ImageCommandMsg(RPCMessage):
 def isCustomInstance(varName: str, typ: str) -> bool:
 
 	return varName == typ or varName.startswith(typ + '_')
-
-
-def probMatrToImage(inp: np.ndarray) -> np.ndarray:
-	# from floats in [-1, 1] to ints in [0, 2^16)
-	rounded = np.round((inp + 1) * 32768)
-	return np.uint16(np.clip(rounded, 0, 65535))
-
-def imageToProbMatr(inp) -> np.ndarray:
-	# from ints in [0, 2^16) to floats in [-1, 1]
-	if inp is None:
-		return None	# Otherwise it would return np.nan
-
-	return (np.array(inp, dtype=float) / 32768) - 1
 
 
 def base64ToImage(inp: str) -> np.ndarray :
@@ -60,6 +46,19 @@ def imageToBase64(img: np.ndarray) -> str :
 	retval, buffr = cv.imencode('.png', img)	#for report: png is compressed, but also lossless, compared to jpg which is lossy
 	return base64.b64encode(buffr).decode("utf-8")
 	# .decode() converts bytes to str
+
+
+def probMatrToImage(inp: np.ndarray) -> np.ndarray:
+	# from floats in [-1, 1] to ints in [0, 2^16)
+	rounded = np.round((inp + 1) * 32768)
+	return np.uint16(np.clip(rounded, 0, 65535))
+
+def imageToProbMatr(inp) -> np.ndarray:
+	# from ints in [0, 2^16) to floats in [-1, 1]
+	if inp is None:
+		return None	# Otherwise it would return np.nan
+
+	return (np.array(inp, dtype=float) / 32768) - 1
 
 
 def encodeFloatMatr(inp: np.ndarray) -> dict:

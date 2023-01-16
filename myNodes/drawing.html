@@ -53,8 +53,8 @@ function handleRandColorsCheckbox(){
     <input type="number" id="node-input-thickness" min=1>
   </div>
   <div class="form-row">
-    <label for="node-input-ch"><i class="fa fa-tag"></i> Line type</label>
-    <select id="node-input-ch">
+    <label for="node-input-lineType"><i class="fa fa-tag"></i> Line type</label>
+    <select id="node-input-lineType">
       <option value="4">LINE_4</option>
       <option value="8">LINE_8</option>
       <option value="16">LINE_AA</option>
@@ -63,8 +63,32 @@ function handleRandColorsCheckbox(){
 </script>
 
 <script type="text/html" data-help-name="draw contours">
-  <p>TODO
+  <p>
+    Draws contours' outlines or filled contours.
+  </p><p>
+    The function draws contour outlines in the image if thickness≥0 or fills the
+    area bounded by the contours if thickness<0.
   </p>
+  <h3>Inputs</h3>
+    <ul>
+      <li>payload.img: The image on which the contours will be drawn
+      <li>payload.contour or payload.contourList
+    </ul>
+  <h3>Arguments</h3>
+    <ul>
+      <li>index: Indicates which contour to draw. If it is negative, all the contours are drawn.
+      <li>randColors [bool]: Use of random colors for drawing each contour.
+      <li>color: In case randColors = False, which color to use to draw the contours.
+        If a 3 channeled color is given, with a grayscale image as input, the output
+        going to be 3 channeled.
+      <li>thickness: Thickness of lines the contours are drawn with
+      <li>line type
+    </ul>
+  <h3>Outputs</h3>
+    <ol>
+      <li>payload [img]: Grayscale, or colored in case the input image was colored,
+        or a 3 channeled color was given.
+    </ol>
 </script>
 
 
@@ -81,7 +105,7 @@ function handleRandColorsCheckbox(){
       lineType: {value: "8"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img, lineList",
     outputs:1,
     outputLabels: "img",
     icon: "",
@@ -111,8 +135,8 @@ function handleRandColorsCheckbox(){
     <input type="number" id="node-input-thickness" min=1>
   </div>
   <div class="form-row">
-    <label for="node-input-ch"><i class="fa fa-tag"></i> Line type</label>
-    <select id="node-input-ch">
+    <label for="node-input-lineType"><i class="fa fa-tag"></i> Line type</label>
+    <select id="node-input-lineType">
       <option value="4">LINE_4</option>
       <option value="8">LINE_8</option>
       <option value="16">LINE_AA</option>
@@ -121,8 +145,26 @@ function handleRandColorsCheckbox(){
 </script>
 
 <script type="text/html" data-help-name="draw lines">
-  <p>TODO
-  </p>
+  <p>Draws line segments on an image. </p>
+  <h3>Inputs</h3>
+    <ul>
+      <li>payload.img: The image on which the lines will be drawn
+      <li>payload.line or payload.lineList
+    </ul>
+  <h3>Arguments</h3>
+    <ul>
+      <li>randColors [bool]: Use of random colors for drawing each line.
+      <li>color: In case randColors = False, which color to use to draw the lines.
+        If a 3 channeled color is given, with a grayscale image as input, the output
+        going to be 3 channeled.
+      <li>thickness
+      <li>line type
+    </ul>
+  <h3>Outputs</h3>
+    <ol>
+      <li>payload [img]: Grayscale, or colored in case the input image was colored,
+        or a 3 channeled color was given.
+    </ol>
 </script>
 
 
@@ -139,7 +181,7 @@ function handleRandColorsCheckbox(){
       lineType: {value: "8"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img, circleList",
     outputs:1,
     outputLabels: "img",
     icon: "",
@@ -169,8 +211,8 @@ function handleRandColorsCheckbox(){
     <input type="number" id="node-input-thickness" min=1>
   </div>
   <div class="form-row">
-    <label for="node-input-ch"><i class="fa fa-tag"></i> Line type</label>
-    <select id="node-input-ch">
+    <label for="node-input-lineType"><i class="fa fa-tag"></i> Line type</label>
+    <select id="node-input-lineType">
       <option value="4">LINE_4</option>
       <option value="8">LINE_8</option>
       <option value="16">LINE_AA</option>
@@ -179,20 +221,40 @@ function handleRandColorsCheckbox(){
 </script>
 
 <script type="text/html" data-help-name="draw circles">
-  <p>TODO
-  </p>
+  <p>Draws circles on an image. </p>
+  <h3>Inputs</h3>
+    <ul>
+      <li>payload.img: The image on which the circles will be drawn
+      <li>payload.circle or payload.circleList
+    </ul>
+  <h3>Arguments</h3>
+    <ul>
+      <li>randColors [bool]: Use of random colors for drawing each circle.
+      <li>color: In case randColors = False, which color to use to draw the circles.
+        If a 3 channeled color is given, with a grayscale image as input, the output
+        going to be 3 channeled.
+      <li>thickness
+      <li>line type
+    </ul>
+  <h3>Outputs</h3>
+    <ol>
+      <li>payload [img]: Grayscale, or colored in case the input image was colored,
+        or a 3 channeled color was given.
+    </ol>
 </script>
 
 
 <!-- drawBBs -->
 <script type="text/javascript">
-  RED.nodes.registerType("draw bbs",{
+  RED.nodes.registerType("draw bounding box",{
     category: 'drawing',
     color: '#e389b9',
     defaults: {
       broker: {value:"", type:"my-mqtt-broker", required:true},
       randColors: {value: false},
       colorVal: {value: "#000000"},
+      ww : {value: ""},
+      hh : {value: ""},
       thickness: {value: "1"},
       lineType: {value: "8"}
     },
@@ -203,13 +265,13 @@ function handleRandColorsCheckbox(){
     icon: "",
     oneditprepare: handleRandColorsCheckbox,
     label: function() {
-      return this.name||"draw bbs";
+      return this.name||"draw bounding box";
     }
   });
 </script>
 
 <!-- drawBBs -->
-<script type="text/html" data-template-name="draw bbs">
+<script type="text/html" data-template-name="draw bounding box">
   <div class="form-row">
     <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
     <input id="node-input-broker">
@@ -223,12 +285,20 @@ function handleRandColorsCheckbox(){
     <input type="color" id="node-input-colorVal">
   </div>
   <div class="form-row">
-    <label for="node-input-thickness"><i class="fa fa-tag"></i> thickness</label>
+    <label for="node-input-thickness"><i class="fa fa-tag"></i> Thickness</label>
     <input type="number" id="node-input-thickness" min=1>
   </div>
   <div class="form-row">
-    <label for="node-input-ch"><i class="fa fa-tag"></i> Line type</label>
-    <select id="node-input-ch">
+    <label for="node-input-ww"><i class="fa fa-tag"></i> Bounding box Width</label>
+    <input type="number" id="node-input-ww" min=1 plceholder="Optional">
+  </div>
+  <div class="form-row">
+    <label for="node-input-hh"><i class="fa fa-tag"></i> Bounding box Height</label>
+    <input type="number" id="node-input-hh" min=1 plceholder="Optional">
+  </div>
+  <div class="form-row">
+    <label for="node-input-lineType"><i class="fa fa-tag"></i> Line type</label>
+    <select id="node-input-lineType">
       <option value="4">LINE_4</option>
       <option value="8">LINE_8</option>
       <option value="16">LINE_AA</option>
@@ -236,13 +306,34 @@ function handleRandColorsCheckbox(){
   </div>
 </script>
 
-<script type="text/html" data-help-name="draw bbs">
-  <p>Draw bounding boxes, given the top left, bottom right corners sets.
-  </p>
+<script type="text/html" data-help-name="draw bounding box">
+  <p>Draws bounding boxes on an image.</p>
+    <h3>Inputs</h3>
+      <ul>
+        <li>payload.img: The image on which the bounding boxes will be drawn
+        <li>payload.boundingboxList or payload.boundingbox. The list of bounding boxes to draw. Each bounding box cam be represented as [[x,y], [w,h]]
+        <li>payload.points: Alternative to boundingboxList. If the dimensions are the same and given, we can have just a list of points [x,y].
+        <li>payload.dimensions: Optional. If the dimensions of the bounding boxes are the same, they can be given here or in the config. 
+      </ul>
+    <h3>Arguments</h3>
+      <ul>
+        <li>randColors [bool]: Use of random colors for drawing each bounding box.
+        <li>color: In case randColors = False, which color to use to draw the bounding boxes.
+          If a 3 channeled color is given, with a grayscale image as input, the output
+          going to be 3 channeled.
+        <li>thickness [int]: Must be positive
+        <li>Contour width & height [int]: Optional. Only if the dimensions of the bounding boxes are the same and not given in the input, they can be given here.
+        <li>line type
+      </ul>
+    <h3>Outputs</h3>
+      <ol>
+        <li>payload [img]: Grayscale, or colored in case the input image was colored,
+          or a 3 channeled color was given.
+      </ol>
 </script>
 
 
-<!--drawBBsFromPoints-->
+<!--drawBBsFromPoints--
 <script type="text/javascript">
   RED.nodes.registerType('draw bbs from points',{
     category: 'drawing',
@@ -265,7 +356,7 @@ function handleRandColorsCheckbox(){
   });
 </script>
 
-<!--drawBBsFromPoints-->
+<!--drawBBsFromPoints--
 <script type="text/html" data-template-name="draw bbs from points">
   <div class="form-row">
     <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
@@ -290,7 +381,29 @@ function handleRandColorsCheckbox(){
 </script>
 
 <script type="text/html" data-help-name="draw bbs from points">
-  <p> Draws bounding boxes on img, given the top left points, the width and the
-    height of the bb.
+  <p>
+    Draws bounding boxes, given a point or set of points, repsresenting the top
+    left corner of each bounding box, and the width and height of the bounding
+    boxes. The w and h should be the same for every bounding box.
   </p>
-</script>
+    <h3>Inputs</h3>
+      <ul>
+        <li>payload.img: The image on which the bounding boxes will be drawn
+        <li>payload.bbList (or bbPoints? todo fix)
+      </ul>
+    <h3>Arguments</h3>
+      <ul>
+        <li>bb width
+        <li>bb height
+        <li>color: The color to use to draw the bounding boxes. If a 3 channeled
+          color is given, with a grayscale image as input, the output going to
+          be 3 channeled.
+        <li>line thickness
+      </ul>
+    <h3>Outputs</h3>
+      <ol>
+        <li>payload [img]: Grayscale, or colored in case the input image was colored,
+          or a 3 channeled color was given.
+      </ol>
+</script> -->
+

@@ -23,7 +23,15 @@ module.exports = function(RED) {
           h: parseInt(config.hh)
         }
       }
-      let timeStats = {};
+      if (msg.payload.dimensions){
+        request.params.w = msg.payload.dimensions[0]; // TODO verify that w,h is the right order
+        request.params.h = msg.payload.dimensions[1];
+      } else if (msg.key == 'dimensions') {
+        request.params.w = msg.payload[0];
+        request.params.h = msg.payload[1];
+      }
+      
+      let timeStats = msg.times || {};
 
       broker.sendMsg(request, node, timeStats, function callback(response){
 
@@ -47,8 +55,8 @@ module.exports = function(RED) {
       let request = {
         funcName: "createMaskFromContour",
         params: {
-          img_ref: msg.payload.img,
-          contour: msg.payload.contour
+          dimensions : msg.payload.dimensions || [config.ww, config.hh], // TODO verify that w,h is the right order
+          contour: msg.payload.contour || msg.payload
         }
       }
 

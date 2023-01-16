@@ -16,6 +16,6 @@ def depthMap(img_L, img_R, numDisparities: int = 16, blockSize: int = 15):
 	disparity = disparity / disparity.max() * 255
 	disparity = disparity.astype(np.uint8)
 
-	print(disparity.min(), disparity.max())
+	#print(disparity.min(), disparity.max())
 
 	return {'img': disparity}

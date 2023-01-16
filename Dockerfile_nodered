@@ -1,0 +1,20 @@
+FROM nodered/node-red
+
+USER root
+# To have permissions
+
+RUN mkdir -p /usr/src/nodered-server && git clone https://github.com/tgmichail/diploma_thesis.git /usr/src/nodered-server/ && chown -R node-red:root /usr/src/nodered-server/
+
+USER node-red
+RUN cd /usr/src/nodered-server/myNodes && npm install
+RUN cd /data && npm init -y && npm install /usr/src/nodered-server/myNodes && npm install node-red-contrib-image-output
+# npm init -y makes a package.json. If it doesn't exist, npm install wouldn't save the dependencies
+
+#move only if it exists already
+RUN ([ ! -f /data/settings.js ] || mv /data/settings.js /data/settings.js.bak) && cp /usr/src/nodered-server/settings.js /data/
+
+VOLUME /data
+
+# it inherits the entrypoint, and the EXPOSE 1880.
+# You still need to run with -p 1880:1880
+# ENTRYPOINT ["npm" "--no-update-notifier" "--no-fund" "start" "--cache" "/data/.npm" "--" "--userDir" "/data"]

@@ -1,121 +1,7 @@
-<!--TODO add hough line and circle detection, what default values and value range to have?
-
+<!--
 gia ta circles des times apo edw isws:
 https://docs.opencv.org/4.x/dd/d1a/group__imgproc__feature.html#ga47849c3be0d0406ad3ca45db65a25d2d
 -->
-
-<!--backprojection-->
-<script type="text/javascript">
-  RED.nodes.registerType('histogram backprojection',{
-    category: 'detection',
-    color: '#e389b9',
-    defaults: {
-      broker: {value:"", type:"my-mqtt-broker", required:true},
-      convElemSize: {value: "3"}
-    },
-    inputs:1,
-    inputLabels: "",
-    outputs:1,
-    outputLabels: "",
-    icon: "",
-    label: function() {
-      return this.name||"histogram backprojection";
-    }
-  });
-</script>
-
-
-<!--backprojection-->
-<script type="text/html" data-template-name="histogram backprojection">
-  <div class="form-row">
-    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
-    <input id="node-input-broker">
-  </div>
-  <div class="form-row">
-    <label for="node-input-convElemSize"><i class="fa fa-tag"></i> Convolution element size</label>
-    <input type="number" id="node-input-convElemSize">
-  </div>
-  <div style="background: var(--red-ui-form-tips-background, #ffe);border-radius: 2px;border: 1px solid var(--red-ui-secondary-border-color, #ddd);">
-    Expected keys for the input message:
-    <ul>
-      <li>Image: img</li>
-      <li>Region of interest: img_roi</li>
-    </ul>
-  </div>
-</script>
-
-<script type="text/html" data-help-name="histogram backprojection">
-  <p> CV algorithm that searches an image for another image, named region of
-    interest, based on their histograms. It returns an image with the
-    probabilities of roi coming from each point.
-  </p>
-</script>
-
-
-<!--templMatching-->
-<script type="text/javascript">
-  RED.nodes.registerType('template matching',{
-    category: 'detection',
-    color: '#e389b9',
-    defaults: {
-      broker: {value:"", type:"my-mqtt-broker", required:true},
-      method: {value: "0"}
-    },
-    inputs:1,
-    inputLabels: "",
-    outputs:1,
-    outputLabels: "",
-    icon: "",
-    label: function() {
-      return this.name||"template matching";
-    }
-  });
-</script>
-
-<!--templMatching-->
-<script type="text/html" data-template-name="template matching">
-  <div class="form-row">
-    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
-    <input id="node-input-broker">
-  </div>
-  <div class="form-row">
-    <label for="node-input-method"><i class="fa fa-tag"></i> Comparison method</label>
-    <select id="node-input-method">
-      <option value="0">SQDIFF</option>
-      <option value="1">SQDIFF_NORMED</option>
-      <option value="2">CCORR</option>
-      <option value="3">CCORR_NORMED</option>
-      <option value="4">CCOEFF</option>
-      <option value="5">CCOEFF_NORMED</option>
-    </select>
-  </div>
-  <div style="background: var(--red-ui-form-tips-background, #ffe);border-radius: 2px;border: 1px solid var(--red-ui-secondary-border-color, #ddd);">
-    Expected keys for the input message:
-    <ul>
-      <li>Image: img</li>
-      <li>Template: img_template</li>
-    </ul>
-  </div>
-</script>
-
-<script type="text/html" data-help-name="template matching">
-  <p> Template Matching is a method for searching and finding the location of a
-    template image in a larger image, by sliding the template image over the
-    input image (as in 2D convolution) and compares the template and patch of
-    input image under the template image.
-  </p>
-  <p> Returns:
-    <ul>
-      <li> a grayscale image, where each pixel denotes how much does the
-    neighbourhood of that pixel match with template, of size (W-w+1, H-h+1).
-    (input image WxH, template image is of size wxh)
-      <li> the bb points that denote the place of the object in the initial image.
-      If multipoints is selected, it returns as many bbs, that have probability
-      above the threshold.
-    </ul>
-  </p>
-</script>
-
 
 <!--HoughLineDetection-->
 <script type="text/javascript">
@@ -126,13 +12,13 @@ https://docs.opencv.org/4.x/dd/d1a/group__imgproc__feature.html#ga47849c3be0d040
       broker: {value:"", type:"my-mqtt-broker", required:true},
       threshold: {value: "150"},
       rho: {value: "1"},
-      theta: {value: "0.01745"},
+      theta: {value: "0.0175"},
       probabilistic: {value: false},
       minLineLength: {value: "0"},
       maxLineGap: {value: "0"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "binary img",
     outputs:1,
     outputLabels: "lineList",
     icon: "",
@@ -173,7 +59,7 @@ probabilistic: bool = False, minLineLength: float = 0, maxLineGap: float = 0) ->
   </div>
   <div class="form-row">
     <label for="node-input-theta"><i class="fa fa-tag"></i> Theta resolution (in rad)</label>
-    <input type="number" id="node-input-theta" min=0 step="0.0002">
+    <input type="number" id="node-input-theta" min=0 step="0.0001">
   </div>
   <div class="form-row">
     <label for="node-input-probabilistic"><i class="fa fa-tag"></i> Probabilistic</label>
@@ -190,19 +76,28 @@ probabilistic: bool = False, minLineLength: float = 0, maxLineGap: float = 0) ->
 </script>
 
 <script type="text/html" data-help-name="hough line detection">
-  <p>Returns list of line segments, same format as featureMatching, ie.
-    <pre>result = [ ((x1,y1),(x2,y2)) , ((x1,y1),(x2,y2)) ...]</pre>
+  <p>Finds lines in a binary image using the standard or probabilistic Hough transform.
   </p>
-  Arguments:
+  <p>Inputs:
+    <ul>
+      <li>msg.payload: A binary image in which we are searching for lines.
+    </ul>
+  </p>
+  <p>Arguments:
   <ul>
-    <li>threshold (int): the minimum number of "votes" for a line to be considered
+    <li>threshold [int]: the minimum number of "votes" for a line to be considered
     <li>rho: the resolution in the rho domain (default: 1)
     <li>theta: the resolution in the theta domain (default: pi/180)
     <li>probabilistic: whether to use probabilistic Hough transform or not
-    <li>minLineLength(int): the minimum length for a line segment to be considered
-    <li>maxLineGap(int): the maximum gap in order to consider 2 line segments as a single one
-  </ul>
-  For more info, see <a href="https://docs.opencv.org/4.x/dd/d1a/group__imgproc__feature.html#ga8618180a5948286384e3b7ca02f6feeb">the openCV docs</a>
+    <li>minLineLength [int]: the minimum length for a line segment to be considered
+    <li>maxLineGap [int]: the maximum gap in order to consider 2 line segments as a single one
+  </ul></p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: A list of lines. Each line is represented as ((x1,y1),(x2,y2)).  <pre>result = [ ((x1,y1),(x2,y2)) , ((x1,y1),(x2,y2)) ...]</pre>
+    </ul>
+  </p>
+  <p>For more info, see <a href="https://docs.opencv.org/4.x/dd/d1a/group__imgproc__feature.html#ga8618180a5948286384e3b7ca02f6feeb">the openCV docs</a></p>
 </script>
 
 
@@ -219,10 +114,10 @@ probabilistic: bool = False, minLineLength: float = 0, maxLineGap: float = 0) ->
       param1: {value: "100"},
       param2: {value: "0.9"},
       minRadius: {value: "1"},
-      maxRadius: {value: "0"}
+      maxRadius: {value: "-1"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "grayscale img",
     outputs:1,
     outputLabels: "circleList",
     icon: "",
@@ -258,12 +153,12 @@ Circles(img, method, dp, minDist[, circles[, param1[, param2[,
     <input type="number" id="node-input-minDist" min=1 step=1>
   </div>
   <div class="form-row">
-    <label for="node-input-param1"><i class="fa fa-tag"></i> high Canny edge threshold (param1)</label>
-    <input type="number" id="node-input-param1" min=1 step=10>
+    <label for="node-input-param1"><i class="fa fa-tag"></i> high Canny threshold (param1)</label>
+    <input type="number" id="node-input-param1" min=1>
   </div>
   <div class="form-row">
     <label for="node-input-param2"><i class="fa fa-tag"></i> Parameter 2</label>
-    <input type="number" id="node-input-param2" min=0>
+    <input type="number" id="node-input-param2" min="0" step=0.01 max="1">
   </div>
   <div class="form-row">
     <label for="node-input-minRadius"><i class="fa fa-tag"></i> Minimum radius</label>
@@ -271,15 +166,172 @@ Circles(img, method, dp, minDist[, circles[, param1[, param2[,
   </div>
   <div class="form-row">
     <label for="node-input-maxRadius"><i class="fa fa-tag"></i> Maximum radius</label>
-    <input type="number" id="node-input-maxRadius" min=0>
+    <input type="number" id="node-input-maxRadius" min=-1>
   </div>
 </script>
 
 <script type="text/html" data-help-name="hough circle detection">
-  <p>Returns a list of circles. Each circle is represented as (x,y,r) or (x,y,r,votes).</p>
-  Arguments:
-  <ul>
-    <li>When maxRadius = -1, it means there is no max radius
-  </ul>
-  For more info, see <a href="https://docs.opencv.org/4.x/dd/d1a/group__imgproc__feature.html#ga47849c3be0d0406ad3ca45db65a25d2d">the openCV docs</a>
+  <p>Using a modification of the Hough transform, find circles in a grayscale image.</p>
+  <p>Inputs:
+    <ul>
+      <li>msg.payload: A grayscale image in which we are searching for circles.
+    </ul>
+  </p>
+  <p>Arguments:
+    <ul>
+      <li>method: The available methods are HOUGH_GRADIENT and HOUGH_GRADIENT_ALT, a variation to get better accuracy.
+      <li>dp [float]: Inverse ratio of the accumulator resolution to the image resolution. For example, if dp=1 , the accumulator has the same resolution as the input image. If dp=2 , the accumulator has half as big width and height. For HOUGH_GRADIENT_ALT the recommended value is dp=1.5, unless some small very circles need to be detected.
+      <li>minDist [float]: Minimum distance between the centers of the detected circles. If the parameter is too small, multiple neighbor circles may be falsely detected in addition to a true one. If it is too large, some circles may be missed.
+      <li>param1 [int]: The higher threshold of the two passed to the Canny edge detector (the lower one is twice smaller). Note that HOUGH_GRADIENT_ALT uses Scharr algorithm to compute image derivatives, so the threshold value shough normally be higher, such as 300 or normally exposed and contrasty images.
+      <li>param2 [float]: In case of HOUGH_GRADIENT, it is the accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles, corresponding to the larger accumulator values, will be returned first. In the case of HOUGH_GRADIENT_ALT algorithm, this is the circle "perfectness" measure. The closer it to 1, the better shaped circles algorithm selects. In most cases 0.9 should be fine. If you want get better detection of small circles, you may decrease it to 0.85, 0.8 or even less. But then also try to limit the search range [minRadius, maxRadius] to avoid many false circles.
+      <li>minRadius [int]: Minimum circle radius.
+      <li>maxRadius [int]: Maximum circle radius. If <= 0, uses the maximum image dimension. If < 0, HOUGH_GRADIENT returns centers without finding the radius. HOUGH_GRADIENT_ALT always computes circle radiuses.
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: A list of circles. Each circle is represented as (x,y,r) or (x,y,r,votes)
+    </ul>
+  </p>
+  <p>For more info, see <a href="https://docs.opencv.org/4.x/dd/d1a/group__imgproc__feature.html#ga47849c3be0d0406ad3ca45db65a25d2d">the openCV docs</a></p>
 </script>
+
+
+<!--backprojection-->
+<script type="text/javascript">
+  RED.nodes.registerType('histogram backprojection',{
+    category: 'detection',
+    color: '#e389b9',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      convElemSize: {value: "3"}
+    },
+    inputs:1,
+    inputLabels: "img, img_roi",
+    outputs:1,
+    outputLabels: "",
+    icon: "",
+    label: function() {
+      return this.name||"histogram backprojection";
+    }
+  });
+</script>
+
+
+<!--backprojection-->
+<script type="text/html" data-template-name="histogram backprojection">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-convElemSize"><i class="fa fa-tag"></i> Convolution element size</label>
+    <input type="number" id="node-input-convElemSize" min=0>
+  </div>
+  <div style="background: var(--red-ui-form-tips-background, #ffe);border-radius: 2px;border: 1px solid var(--red-ui-secondary-border-color, #ddd);">
+    Expected keys for the input message:
+    <ul>
+      <li>Image: img</li>
+      <li>Region of interest: img_roi</li>
+    </ul>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="histogram backprojection">
+  <p> An algorithm that searches an image for a "region of interest" (ROI), based on their histograms.
+   It returns an image with the probabilities of ROI coming from each point.
+  </p>
+  <p>Inputs:
+    <ul>
+      <li>msg.payload.img: The colored image in which we are searching for the ROI.
+      <li>msg.payload.img_roi: The colored region of interest that we are looking to find.
+    </ul>
+  </p>
+  <p>Arguments:
+    <ul>
+      <li>Convolution element size [int]: If not zero, the output is convoluted using a circular kernel of this size.
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: A grayscale image, where each pixel denotes how much does the
+      colors of that pixel match with ROI
+    </ul>
+  </p>
+</script>
+
+
+<!--templMatching-->
+<script type="text/javascript">
+  RED.nodes.registerType('template matching',{
+    category: 'detection',
+    color: '#e389b9',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true},
+      method: {value: "0"}
+    },
+    inputs:1,
+    inputLabels: "img, img_template",
+    outputs:1,
+    outputLabels: "probMatr or floatMatr",
+    icon: "",
+    label: function() {
+      return this.name||"template matching";
+    }
+  });
+</script>
+
+<!--templMatching-->
+<script type="text/html" data-template-name="template matching">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-method"><i class="fa fa-tag"></i> Comparison method</label>
+    <select id="node-input-method">
+      <option value="0">SQDIFF</option>
+      <option value="1">SQDIFF_NORMED</option>
+      <option value="2">CCORR</option>
+      <option value="3">CCORR_NORMED</option>
+      <option value="4">CCOEFF</option>
+      <option value="5">CCOEFF_NORMED</option>
+    </select>
+  </div>
+  <div style="background: var(--red-ui-form-tips-background, #ffe);border-radius: 2px;border: 1px solid var(--red-ui-secondary-border-color, #ddd);">
+    Expected keys for the input message:
+    <ul>
+      <li>Image: img</li>
+      <li>Template: img_template</li>
+    </ul>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="template matching">
+  <p> Template Matching is a method for searching and finding the location of a
+    template image in a larger image, by sliding the template image over the
+    input image (as in 2D convolution) and compares the template and patch of
+    input image under the template image.
+  </p>
+  <p>Inputs:
+    <ul>
+      <li>msg.payload.img: The image in which we are searching for the template.
+      <li>msg.payload.img_template: The template that we are looking to find.
+    </ul>
+  </p>
+  <p>Arguments:
+    <ul>
+      <li>Comparison method: Which method to use to generate the similarity results. If the squared differences
+      method is used, smaller values mean more similarity, otherwise bigger values mean more similarity.
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: A float matrix (or probMatr if using a normalized method),
+      where each pixel denotes how much does the
+      neighbourhood of that pixel match with template, of size (W-w+1, H-h+1).
+      (input image WxH, template image is of size wxh)
+    </ul>
+  </p>
+</script>
+

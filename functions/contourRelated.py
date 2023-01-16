@@ -133,8 +133,8 @@ def boundingShape(contour, shape: str):
 	#the others want a 2d point set
 	if shape == "Rectangle":
 		x, y, w, h = cv.boundingRect(contour) #x,y,w,h
-		bbpoints = [[x, y], [x + w, y + h]]
-		return {'bbPoints': bbpoints}
+		bbpoints = [[x, y], [w, h]]
+		return {'boundingbox': bbpoints}
 		#todo 2 2d points, mhpws thelw 4? gia ta draw
 
 	elif shape == "MinAreaRectangle":

@@ -6,6 +6,8 @@
     color: '#0737f7',
     defaults: {
       broker: {value:"", type:"my-mqtt-broker", required:true},
+      ww: {value: "100"},
+      hh: {value: "100"}
     },
     inputs:1,
     outputs:1,
@@ -22,10 +24,33 @@
     <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
     <input id="node-input-broker">
   </div>
+  <div class="form-row">
+    <label for="node-input-ww"><i class="fa fa-tag"></i> width</label>
+    <input type="number" id="node-input-ww" min=1>
+  </div>
+  <div class="form-row">
+    <label for="node-input-hh"><i class="fa fa-tag"></i> height</label>
+    <input type="number" id="node-input-hh" min=1>
+  </div>
 </script>
 
 <script type="text/html" data-help-name="create mask from contour">
-  <p>Creates a mask from a given contour and a reference image.</p>
+  <p>
+    Creates an image mask from a given contour, on an empty image of given dimensions.
+  </p>
+  <h3>Inputs</h3>
+    <ul>
+      <li>payload.contour [contour]
+      <li>payload.dimensions : An array of the result's dimensions. Can also be given as arguments
+    </ul>
+  <h3>Arguments</h3>
+    <ul>
+      <li>Width, height [int]: The result's dimensions. Can also be given in the input.
+    </ul>
+  <h3>Outputs</h3>
+    <ol>
+      <li>payload [img]: Binary image, the created mask.
+    </ol>
 </script>
 
 <!--createWindow-->
@@ -130,7 +155,7 @@
     <label for="node-input-param"><i class="fa fa-tag"></i>
       <span id="windowType-param-name"> parameter</span>
     </label>
-    <input type="number" id="node-input-param" placeholder = TODO add span step=0.1>
+    <input type="number" id="node-input-param" step=0.1>
   </div>
   <div class="form-row">
     <label for="node-input-ww"><i class="fa fa-tag"></i> width</label>
@@ -143,6 +168,30 @@
 </script>
 
 <script type="text/html" data-help-name="create window">
-  <p> Return an n-dimensional window of size and dimensionality of the input image.
+  <p>
+    Returns a window of the specified type, and dimensions (width, height). Some
+    windows require some extra parameters, eg the kaiser window requires beta.
   </p>
+  <p>
+    For more info about the windows and their parameters, see the link in the
+    references.
+  </p>
+  <h3>Inputs</h3>
+    <ul>
+      <li>payload or payload.dimensions: Optional. If given, it is an array of the result's dimensions. If not given, the input message acts as a trigger for the node to run.
+    </ul>
+  <h3>Arguments</h3>
+    <ol>
+      <li>window type
+      <li>parameter (optional)
+      <li>width, height [int] : The result's dimensions. Can also be given in the input message.
+    </ol>
+  <h3>Outputs</h3>
+    <ol>
+      <li>payload [probMatr]: The created window. It is a probability matrix with
+        values in [-1, 1]
+    </ol>
+  <h3>References</h3>
+  <a href="https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.window">
+    skimage Docs - more info about the window types and their parameters</a>
 </script>

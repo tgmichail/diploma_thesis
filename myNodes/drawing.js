@@ -10,6 +10,10 @@ module.exports = function(RED) {
 
     node.on('input', function(msg, nodeSend, nodeDone) {
 
+      if (! msg.payload.contourList && msg.payload.contour) // If the input was just one contour
+        msg.payload.contourList = [ msg.payload.contour ];
+      //TODO make the Python have arguments either contour or contourList
+
       let request = {
         funcName: "drawContours",
         params: {
@@ -17,7 +21,7 @@ module.exports = function(RED) {
           index : -1,
           contourList: msg.payload.contourList,
           randColors: config.randColors,
-          color: hexToRGB(config.colorVal),
+          color: hexToBGR(config.colorVal),
           thickness: parseInt(config.thickness),
           lineType: parseInt(config.lineType)
         }
@@ -48,7 +52,7 @@ module.exports = function(RED) {
           img: msg.payload.img,
           lineList: msg.payload.lineList,
           randColors: config.randColors,
-          color: hexToRGB(config.colorVal),
+          color: hexToBGR(config.colorVal),
           thickness: parseInt(config.thickness),
           lineType: parseInt(config.lineType)
         }
@@ -73,13 +77,16 @@ module.exports = function(RED) {
 
     node.on('input', function(msg, nodeSend, nodeDone) {
 
+      if (! msg.payload.circleList && msg.payload.circle) // If the input was just one circle
+        msg.payload.circleList = [ msg.payload.circle ];
+      
       let request = {
         funcName: "drawCircles",
         params: {
           img: msg.payload.img,
           circleList: msg.payload.circleList,
           randColors: config.randColors,
-          color: hexToRGB(config.colorVal),
+          color: hexToBGR(config.colorVal),
           thickness: parseInt(config.thickness),
           lineType: parseInt(config.lineType)
         }
@@ -104,17 +111,21 @@ module.exports = function(RED) {
 
     node.on('input', function(msg, nodeSend, nodeDone) {
 
+      let bbs = msg.payload.boundingboxList || msg.payload.points || [ msg.payload.boundingbox ];
       let request = {
         funcName: "drawBBs",
         params: {
           img: msg.payload.img,
-          bbList: msg.payload.bbList,
+          boundingboxList: bbs,
           randColors: config.randColors,
-          color: hexToRGB(config.colorVal),
+          color: hexToBGR(config.colorVal),
           thickness: parseInt(config.thickness),
           lineType: parseInt(config.lineType)
         }
       }
+      if (msg.payload.bbDims || (config.ww && config.hh))
+        request.params.bbDims = msg.payload.dimensions || [parseInt(config.ww), parseInt(config.hh)];
+      
       broker.sendMsg(request, node, msg.times, function callback(response){
 
         msg.payload = response.data.results.img;
@@ -124,10 +135,10 @@ module.exports = function(RED) {
       });
     });
   }
-  RED.nodes.registerType("draw bbs", DrawBBs);
+  RED.nodes.registerType("draw bounding box", DrawBBs);
 
   //drawBBsFromPoints
-  function DrawBBsFromPoints(config) {
+  /*function DrawBBsFromPoints(config) {
     RED.nodes.createNode(this, config);
     let node = this;
 
@@ -141,7 +152,7 @@ module.exports = function(RED) {
           img: msg.payload.img,
           points: msg.payload.points,
           bbDims: msg.payload.bbDims || [parseInt(config.ww), parseInt(config.hh)],
-          color: hexToRGB(config.colorVal),
+          color: hexToBGR(config.colorVal),
           thickness: parseInt(config.thickness),
         }
       }
@@ -154,17 +165,16 @@ module.exports = function(RED) {
       });
     });
   }
-  RED.nodes.registerType("draw bbs from points", DrawBBsFromPoints);
+  RED.nodes.registerType("draw bbs from points", DrawBBsFromPoints);*/
 }
 
 
-function hexToRGB(hex){
+function hexToBGR(hex){ // opencv functions take bgr color
 
   hex = hex.substring(1,7).match(/.{2}/g);
-  let rgb = [
-    parseInt(hex[0], 16),
+  return [
+    parseInt(hex[2], 16),
     parseInt(hex[1], 16),
-    parseInt(hex[2], 16)
+    parseInt(hex[0], 16)
   ];
-  return rgb;
  }

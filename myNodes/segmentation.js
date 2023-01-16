@@ -100,7 +100,6 @@ module.exports = function(RED) {
 
         msg.payload = response.data.results.img_mask;
         msg.key = 'img';
-        //watch out, returns binary img TODO
         nodeSend(msg);
         nodeDone();
       });

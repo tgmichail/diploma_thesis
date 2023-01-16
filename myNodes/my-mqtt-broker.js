@@ -15,30 +15,38 @@ module.exports = function(RED) {
 
     client.on('message', function(topic, message) {
 
-      const node = instances[topic].node,
+      console.log('got message at topic '+topic);
+      client.unsubscribe(topic)
+
+      if (! (topic in instances) || !instances[topic]){
+        // This could happen, if 2 servers are on the same broker.
+        console.error('got unexpected message at topic '+topic)
+        return
+      }
+
+      const node2= instances[topic].node,
         callback = instances[topic].cb,
         sentTime = instances[topic].tSend;
-      
+
       try {
-        client.unsubscribe(topic)
-        
         const netTime = (Date.now() - sentTime) / 1000; // in seconds
 
         let response = JSON.parse(message);
         if (response.data.statusMsg != 'Success'){
-          node.error(response.data.statusMsg);
+          node2.error(response.data.statusMsg);
+          delete instances[topic]
           return
         }
-        
+
         // update the dict in the node, with call-by-reference
-        instances[topic].times[node.id] = {netTime: netTime, pyTime: response.data.pyTime,
-            funcTime: response.data.funcTime};
+        instances[topic].times[node2.id] = {netTime: netTime, pyTime: response.data.pyTime,
+            funcTime: response.data.funcTime, type: node2.type};
         delete instances[topic]
-        
+
         callback(response)
 
       } catch (e) {
-        node.error('Exception in node-red js: ' + e)
+        node2.error('Exception in node-red js: ' + e)
       }
     });
 
@@ -76,7 +84,7 @@ module.exports = function(RED) {
 
       let payloadEnc = JSON.stringify(payload);
 
-      client.publish('image_node', payloadEnc);
+      client.publish('image_requests', payloadEnc);
     }
 
     RED.nodes.createNode(this, config);

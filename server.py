@@ -11,7 +11,7 @@ import traceback
 import functions
 
 
-ListCvFunctReturns = {'line':'img', 'circle':'img', 'dellipse':'img',
+ListCvFuncReturns = {'line':'img', 'circle':'img', 'dellipse':'img',
 'polyline':'img', 'putText':'img', 'split': ['img_0', 'img_1', 'img_2'], 'copyMakeBorder':'img',
 'add':'img', 'addWeighted':'img', 'cvtColor':'img', 'resize':'img',
 'warpAffine':'img', 'warpPerspective':'img', 'threshold':'img',
@@ -32,23 +32,25 @@ def on_request(msg: ImageCommandMsg.Request) -> ImageCommandMsg.Response:
 	try:
 		startTime = process_time()
 
-		# Finds the function with name funcName in the module functions, and in cv
+		# Finds the function with name funcName in the module functions,
+		# and if not found, in openCV
 		funcToCall = getattr(functions, msg.funcName, None) # None is returned if it does not exist
-		cvFunctReturns = None
+		funcIsFromCV = False
 
 		if funcToCall is None:
 			funcToCall = getattr(cv, msg.funcName) # if funcName not in cv, an Exception is raised
+			funcIsFromCV = True
 
 			if msg.returnLabel: # if return Label is given by the user, use that
-				cvFunctReturns = msg.returnLabel
+				cvFuncReturns = msg.returnLabel
 			else:
 				try:
-					cvFunctReturns = ListCvFunctReturns[msg.funcName]
+					cvFuncReturns = ListCvFuncReturns[msg.funcName]
 				except KeyError as e:
-					raise KeyError(f'Function {msg.funcName} not included in ListCvFunctReturns. Try setting msg.returnLabel') from e
+					raise KeyError(f'Function {msg.funcName} not included in ListCvFuncReturns. Try setting returnLabel') from e
 
-
-		params = decodeParams(msg.params, removePrefix=(cvFunctReturns is not None))
+		# Decodes the parameters
+		params = decodeParams(msg.params, removePrefix=funcIsFromCV)
 
 		# Runs the function
 		print("before function")
@@ -57,23 +59,24 @@ def on_request(msg: ImageCommandMsg.Request) -> ImageCommandMsg.Response:
 		funcTime = process_time() - funcStartTime
 		print(f"after function, time: {funcTime}")
 
-		# If is cv function, it creates the dict
-		if cvFunctReturns:
+		# If it was an openCV function, it creates the return dict
+		if funcIsFromCV:
 
-			if isinstance(outp, tuple): # if it returns many things?
-				if (not isinstance(cvFunctReturns, list)) or len(cvFunctReturns) != len(outp):
+			if isinstance(outp, tuple): # if it returns many things
+				if (not isinstance(cvFuncReturns, list)) or len(cvFuncReturns) != len(outp):
 					raise Exception(f"Function {msg.funcName} returned {len(outp)} results. Please give as many labels.")
 
-				outp = {key: val for (key,val) in zip(cvFunctReturns, outp)}
-				# cvFunctReturns must then be a list or tuple with the dict keys
+				outp = {key: val for (key,val) in zip(cvFuncReturns, outp)}
+				# cvFuncReturns must then be a list or tuple with the dict keys
 			else:
-				outp = {cvFunctReturns: outp}
+				outp = {cvFuncReturns: outp}
 
-		print(cvFunctReturns, outp)
+		print(outp)
 
 		if not isinstance(outp, dict): # all outp must be dict
 			raise Exception(f"output of function {msg.funcName} must be a dict!")
 
+		# Encodes the returned params
 		outp = encodeParams(outp)
 
 		# If it is not serializable, the error will be caught outside of here,
@@ -99,13 +102,15 @@ def on_request(msg: ImageCommandMsg.Request) -> ImageCommandMsg.Response:
 
 
 if __name__ == '__main__':
-	rpc_name = 'image_node' # This is the "topic" of the channel
 
 	# Set broker connection parameters
 	#192.168.0.127, 5672 amqp localhost
-	conn_params = ConnectionParameters(host='155.207.19.251', port=1883)
-	conn_params.credentials.username = 'se2:student'
-	conn_params.credentials.password = 'student'
+	conn_params = ConnectionParameters(host='localhost', port=1883)
+	conn_params.credentials.username = 'guest'
+	conn_params.credentials.password = 'guest'
+	#conn_params = ConnectionParameters(host='155.207.19.251', port=1883)
+	#conn_params.credentials.username = 'se2:student'
+	#conn_params.credentials.password = 'student'
 
 	# Create an instance of a Node
 	node = Node(node_name='image-node',
@@ -116,7 +121,8 @@ if __name__ == '__main__':
 
 	# Create an RPCService endpoint for the Node
 	rpc = node.create_rpc(msg_type=ImageCommandMsg,
-						  rpc_name=rpc_name,
+						  rpc_name='image_requests', # This is the "topic" of the channel
 						  on_request=on_request)
+
 	# Starts the RPCService and wait until an exit signal is catched.
 	node.run_forever()

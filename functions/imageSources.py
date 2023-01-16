@@ -5,17 +5,15 @@ from skimage import data
 
 # Create image
 def createSolidColor(x: int, y: int, color: list = [255,255,255], dtype:str='uint8'):
-	''' color must be in RBG format (if we want the result to be in BGR) '''
-	# TODO but we want the result to be in rgb, given input in rgb
+	''' The input color must be in BGR format (if we want the result to be in BGR) '''
 
 	if np.ndim(color) == 0: # grayscale image
 		return {'img': np.full((x, y), color, dtype=dtype)}
-
 	else:
 		if len(color) != 3:
 			raise Warning('Are you sure? The given color doesnt have 3 components')
 
-		color = list(color[::-1]) # if it was a tuple. Alsom invert for BGR opencv images
+		color = list(color) # in case it was a tuple
 
 		return {'img': np.full([x, y, 3], color, dtype=dtype)}
 
@@ -25,8 +23,8 @@ def addNoise(img: np.ndarray, gen:str, mean: float = 0, scale: float = 1):
 
 	noise = createRandom(gen, img.shape, mean=mean, scale=scale)['img']
 
-	img = np.uint8(cv.add(img, noise, dtype=256)) # cv.add() does a clip() at the end
-	# TODO find if dtype should be 256 or cv.CV_8UC3
+	img = cv.add(img, noise, dtype=cv.CV_8U) # cv.add() does a clip() at the end
+	# TODO verify dtype should be cv.CV_8U. Putting 256 was wrong, probably just worked because of bitmask (CV_8U was 0)
 
 	return {'img': img}
 
@@ -75,7 +73,7 @@ def getImageFromExamples(name: str):
 		img = cv.cvtColor(img, cv.COLOR_RGB2BGR)
 
 	elif img.dtype == bool or img.dtype == float: #isBoolean or isFloat, aka is in [0,1]
-		img = img*255
+		img = img * 255.99
 		img = img.astype(np.uint8)
 
 	#rgba logo->not used, uint16 rgba lili->not used, float64 logan fantom

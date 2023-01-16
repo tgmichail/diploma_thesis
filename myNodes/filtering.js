@@ -239,5 +239,5 @@ module.exports = function(RED) {
       });
     });
   }
-  RED.nodes.registerType("canny ed", CannyED);
+  RED.nodes.registerType("canny edge detection", CannyED);
 }

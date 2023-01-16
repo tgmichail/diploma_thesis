@@ -16,11 +16,11 @@ module.exports = function(RED) {
     node.on('input', function(msg, nodeSend, nodeDone) {
 
       let color
-      if(config.isGrayscale){
+      if (config.isGrayscale){
         color = parseInt(config.grayscaleVal)
-      }else {
+      } else {
         // colorVal is in #FFFFFF format
-        color = hexToRGB(config.colorVal)
+        color = hexToBGR(config.colorVal)
       }
 
       let request = {
@@ -122,17 +122,14 @@ module.exports = function(RED) {
     });
   }
   RED.nodes.registerType("use external image", UseExternalImage);*/
-
-
 }
 
-function hexToRGB(hex){
+function hexToBGR(hex){ // create solid color takes bgr input
 
   hex = hex.substring(1,7).match(/.{2}/g);
-  let rgb = [
-    parseInt(hex[0], 16),
+  return [
+    parseInt(hex[2], 16),
     parseInt(hex[1], 16),
-    parseInt(hex[2], 16)
+    parseInt(hex[0], 16)
   ];
-  return rgb;
 }

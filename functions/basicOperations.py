@@ -1,11 +1,12 @@
-import numpy as np
 import cv2 as cv
+import numpy as np
 from enum import Enum
+from skimage.util import compare_images, img_as_ubyte
 
 from . import imageSources
 from .assertion import assertImg
 
-from skimage.util import compare_images
+
 
 # Image dimensions
 def getImageDims(img):
@@ -13,8 +14,9 @@ def getImageDims(img):
 	dims = img.shape[0:2]
 	isGr = (img.ndim < 3 or img.shape[2] == 1)
 	channels = 1 if isGr else img.shape[2]
+	colDepth = img.dtype.name
 	return {'isGrayscale': isGr, 'dimensions': dims, 'width': dims[1], 'height': dims[0],
-			'channels': channels, 'numDims': img.ndim}
+			'numChannels': channels, 'numDims': img.ndim, 'colDepth': colDepth}
 
 # Tune HSV
 def tuneHSV(img: np.array, ch: str, multiply: float = 1, add: float = 0, modulo: bool = False):
@@ -39,6 +41,17 @@ def tuneHSV(img: np.array, ch: str, multiply: float = 1, add: float = 0, modulo:
 	hsvimg[:,:,ch] = tunedCh.astype(img.dtype)
 
 	return {'img': cv.cvtColor(hsvimg, cv.COLOR_HSV2BGR)}
+
+
+def changeColorDepth(img): # So that external images are converted to uint8
+
+	try:
+		img = img_as_ubyte(img)
+	except ValueError:
+		if img.dtype.name in ['float32','float64'] and np.abs(img).max() > 1:
+			raise TypeError('Image has floats outside the range [-1,1] !')
+		raise TypeError(f'Image type was not understood: {img.dtype}')
+	return {'img': img}
 
 #Changing Colorspaces - OpenCV ready
 #Geometric Transformations of Images - OpenCV ready
@@ -129,26 +142,6 @@ def morphTransform(img, kernelSize: int, kernelShape: int, transform: int, itera
 	return {'img': result}
 
 
-# Drawing Functions
-#TODO check if coords are inside the img boundaries, add default values
-# drawLine, drawRect, drawCirc, drawEllip, drawPolyline, drawText - OpenCV ready
-
-def drawRect(img: np.ndarray, rect: list, color: list = (255,0,0),
-		thickness: int = 1, filled: bool = False) -> dict:
-	''' rect can be either [[x1,y1],[x2,y2]] or a contour of 4 points (if a rotated rectangle) '''
-	if filled:
-		thickness = -1
-
-	if len(rect) == 2:
-		cv.rectangle(img, rect, color=color, thickness=thickness)
-	elif len(rect) == 4:
-		cv.drawContours(img, [rect], 0, color=color, thickness=thickness)
-	else:
-		raise Exception('rect must be a list of 2 or 4 points')
-
-	return {'img': img}
-
-
 #Split Image - OpenCV ready
 #Merge Image - OpenCV ready, but will implement too, because we need inputs as
 # img1, img2, img3 and not array[imgs]
@@ -185,9 +178,10 @@ def compare(img_1, img_2, method: str = "diff", tileSize: tuple = (8,8)):
 def multiply(img_1, scale: float = 1, img_2 = None, probMatr = None):
 
 	if probMatr is not None:  #probMatr x image
-		print(probMatr)
 		assertImg(probMatr, img_1, sameDimensions=True)
-		# TODO 3plasiase ta dims, epeidh alliws petaei sfalma.
+		if img_1.ndims > 2 and probMatr.ndim == 2:
+			probMatr = cv.cvtColor(probMatr.astype('float32'), cv.COLOR_GRAY2BGR)
+			# 3plasiase ta dims, epeidh alliws petaei sfalma.
 		res = cv.multiply(probMatr, img_1, scale = scale, dtype = cv.CV_8U)
 	elif img_2 is not None:  #image x image
 		assertImg(img_1, img_2, sameDimensions=True, sameChannelsNum=True)
@@ -198,27 +192,43 @@ def multiply(img_1, scale: float = 1, img_2 = None, probMatr = None):
 	# TODO ? doesnt include scalar x probMatr
 	return {'img': res}
 
+# Affine transform - 3 parts: resize, rotation, translation
 #def resize(img_src, dsize_cols: int = 0, dsize_rows: int = 0, fx: float = 0, fy: float = 0) #dsize or (fx and fy) must be non-zero
 
-def affineTransform(img, translationPercentX:float = 0, translationPercentY:float = 0,
-	rotCenterPercentX: float = 0.5, rotCenterPercentY: float = 0.5,
-	rotAngle: int = 0, scale: int = 1):
 
+def rotation(img, rotCenterX: float = 50, rotCenterY: float = 50, rotAngle: int = 0,
+	dimsPercent: bool = True, destDims: tuple = None):
 	(h, w) = img.shape[0:2]
 
-	#translation
-	Mt = np.float32([[ 1, 0, w*translationPercentX],[ 0, 1, h*translationPercentY]])
-	#scaling
-	# Ms = np.float32([[ np.sqrt(scale), 0, 0],[ 0, np.sqrt(scale), 0]])
-	#rotation
-	Mr = cv.getRotationMatrix2D( ((w-1)*rotCenterPercentX,(h-1)*rotCenterPercentY), rotAngle, 1)
+	if dimsPercent:
+		rotCenterX *= w / 100
+		rotCenterY *= h / 100
 
-	M = Mr
+	Mr = cv.getRotationMatrix2D( (rotCenterX,rotCenterY), rotAngle, 1)
 
-	img = cv.warpAffine(src = img, M = M, dsize = (scale*w, scale*h))
+	if destDims is None:
+		(h, w) = img.shape[0:2]
+	else:
+		(w, h) = destDims
 
+	img = cv.warpAffine(src = img, M = Mr, dsize = (w, h))
 	#TODO ayto to pragma kai oles oi alles epishs prepei na einai uint8. twra den exw idea ti einai
 	return {'img': img}
+
+
+def translation(img, translX:float = 0, translY:float = 0, dimsPercent: bool = True):
+	(h, w) = img.shape[0:2]
+
+	if dimsPercent:
+		translX *= w / 100
+		translY *= h / 100
+
+	Mt = np.float32([[ 1, 0, translX],[ 0, 1, translY]])
+
+	img = cv.warpAffine(src = img, M = Mt, dsize = (w, h)) # Or h,w ??
+	#TODO ayto to pragma kai oles oi alles epishs prepei na einai uint8. twra den exw idea ti einai
+	return {'img': img}
+
 
 # Combine imgs on mask
 def combineImages(img_0: np.ndarray, img_1: np.ndarray, img_mask: np.ndarray):

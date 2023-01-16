@@ -22,7 +22,7 @@ def _convertRhoTheta2Points(r: float, th: float, xmax: int, ymax: int) -> list:
 		if y1 >= 0 and y1 <= ymax:
 			points.append((0, y1))
 	except OverflowError: # because may divide by zero and become infinity
-		print('Caught div by 0 while looking for border points of line at _convertRhoTheta2Points')
+		pass #print('Caught div by 0 while looking for border points of line at _convertRhoTheta2Points')
 
 	# try y=0
 	try:
@@ -32,7 +32,7 @@ def _convertRhoTheta2Points(r: float, th: float, xmax: int, ymax: int) -> list:
 		if len(points) == 2:
 			return tuple(points)
 	except OverflowError:
-		print('Caught div by 0 while looking for border points of line at _convertRhoTheta2Points')
+		pass #print('Caught div by 0 while looking for border points of line at _convertRhoTheta2Points')
 
 	# try x=xmax
 	try:
@@ -42,7 +42,7 @@ def _convertRhoTheta2Points(r: float, th: float, xmax: int, ymax: int) -> list:
 		if len(points) == 2:
 			return tuple(points)
 	except (OverflowError,ValueError):
-		print('Caught div by 0 while looking for border points of line at _convertRhoTheta2Points')
+		pass #print('Caught div by 0 while looking for border points of line at _convertRhoTheta2Points')
 
 	#try y=ymax
 	try:
@@ -50,7 +50,7 @@ def _convertRhoTheta2Points(r: float, th: float, xmax: int, ymax: int) -> list:
 		if x1 >= 0 and x1 <= xmax:
 			points.append((x1, ymax))
 	except (OverflowError,ValueError):
-		print('Caught div by 0 while looking for border points of line at _convertRhoTheta2Points')
+		pass #print('Caught div by 0 while looking for border points of line at _convertRhoTheta2Points')
 
 	if len(points) != 2:
 		raise Exception('_convertRhoTheta2Points could not find 2 points')
@@ -112,15 +112,16 @@ def HoughCircles(img, method: int = 3, dp: float = 1.5, minDist: float = 5,
 	circles = circles[0].round().astype('uint32').tolist() # we get circles[0] because it has a useless extra [ ] outside
 	return {'circleList': circles}
 
-# Template Matching - also cvready TODO na thn krathsw h oxi?
+# Template Matching - also cvready
 #vlepe arxeio template matching
 def templMatching(img, img_template, method: int):
 	#methods = ['cv.TM_CCOEFF', 'cv.TM_CCOEFF_NORMED', 'cv.TM_CCORR',
 	#			'cv.TM_CCORR_NORMED', 'cv.TM_SQDIFF', 'cv.TM_SQDIFF_NORMED']
 
 	# tm only takes uint8 (and float32 but we don't support that)
-	# todo check dimensions of template < imgs
 	assertImg(img, uint8=True)
+	if img.shape[0] < img_template.shape[0] or img.shape[1] < img_template.shape[1]:
+		raise Exception('In templMatching, the template must have smaller dimensions than the image')
 
 	# Apply template Matching
 	res = cv.matchTemplate(img, img_template, method)
@@ -160,7 +161,7 @@ def backprojection(img_target, img_roi, convElemSize: int):
 	#ret,thresh = cv.threshold(dst,50,255,0)
 	#thresh = cv.merge((thresh,thresh,thresh))
 	#res = cv.bitwise_and(img_target,thresh)
-	return {'img': dst}
+	return {'img': dst} #TODO should this be probMatr? Because it is probabilities(?)
 
 	#to show
 	#plt.imshow(dst, cmap = "gray")

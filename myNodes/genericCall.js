@@ -10,12 +10,18 @@ module.exports = function(RED) {
     let config_params = JSON.parse(config.params);
 
     node.on('input', function(msg, nodeSend, nodeDone) {
-
+      /* How to check if we have just one message, or many after a join node:
+         * NOT by checking typeof msg.payload == 'object'. Even if it is a b64 string, it will consider it object.
+         * NOT by checking if(msg.key) (exists). Even after a join node, msg.key will be kept from one of the msgs.
+         * Maybe by checking if msg.key exists as a key in the msg.payload object. Then it would be the result of join
+         * Maybe if we check if it is a js object with another way. Eg. let keys=0;for(x of msg.payload)keys++; and check if keys>0 (?)
+             And maybe make sure that the object is not a floatMatr with scale and matr.
+      */
       let msgObj = {};
-      if (msg.key) // it has a single input. Not many connected to a join node
-        msgObj[msg.key] = msg.payload;
-      else
+      if (!msg.key || msg.payload.hasOwnProperty(msg.key)) // if msg is the output of a join node. (many inputs)
         msgObj = msg.payload;
+      else // just one input
+        msgObj[msg.key] = msg.payload;
 
 
       let request = {

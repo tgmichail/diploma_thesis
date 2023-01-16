@@ -2,7 +2,7 @@
 <script type="text/javascript">
   RED.nodes.registerType("calculate histogram",{
     category: 'histogram related',
-    color: '#666666',
+    color: '#939393',
     defaults: {
       broker: {value:"", type:"my-mqtt-broker", required:true},
       isGrayscale: {value: false},
@@ -62,7 +62,25 @@
 </script>
 
 <script type="text/html" data-help-name="calculate histogram">
-  <p>TODO
+  <p>Calculates and returns the histogram for a given image.
+  </p>
+  <p>Inputs:
+    <ul>
+      <li>msg.payload or msg.payload.img: An image, grayscale or colored
+      <li>msg.payload.img_mask: Optional. A binary image; if given, the histogram
+        is calculated only from the pixels where the mask is not zero.
+    </ul>
+  </p>
+  <p>Parameters:
+    <ul>
+      <li> numBins [int]: The number of bins of brightness that the histogram will have. Can be from 1 to 255.
+      <li> Channel: For colored images. For which color channel to calculate the histogram.
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: A JSON encoded array of the computed histogram
+    </ul>
   </p>
 </script>
 
@@ -70,16 +88,16 @@
 <script type="text/javascript">
   RED.nodes.registerType("plot histogram",{
     category: 'histogram related',
-    color: '#666666',
+    color: '#939393',
     defaults: {
       broker: {value:"", type:"my-mqtt-broker", required:true},
       perChannel: {value: false},
       logy: {value: true}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:1,
-    outputLabels: "hist plot",
+    outputLabels: "img",
     icon: "",
     label: function() {
       return this.name||"plot histogram";
@@ -103,7 +121,24 @@
   </div></script>
 
 <script type="text/html" data-help-name="plot histogram">
-  <p>TODO
+  <p>Calculates and plots the histogram for a given image.
+  </p>
+  <p>Inputs:
+    <ul>
+      <li>msg.payload: An image, grayscale or colored
+    </ul>
+  </p>
+  <p>Parameters:
+    <ul>
+      <li> perChannel: Only applicable to colored images. Whether to plot 3 histograms together
+        (one for each color), or only 1 histogram of the total brightness.
+      <li> logy: Whether to plot the logarithm of the histogram.
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: An image with the plot of the computed histograms
+    </ul>
   </p>
 </script>
 
@@ -112,7 +147,7 @@
 <script type="text/javascript">
   RED.nodes.registerType("histogram equalization",{
     category: 'histogram related',
-    color: '#666666',
+    color: '#939393',
     defaults: {
       broker: {value:"", type:"my-mqtt-broker", required:true},
       equalType: {value: "0"},
@@ -121,9 +156,9 @@
       tileGridSizeY: {value: "8"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:1,
-    outputLabels: "hist",
+    outputLabels: "img",
     icon: "",
     label: function() {
       return this.name||"histogram equalization";
@@ -156,7 +191,7 @@
     </select>
   </div>
   <div class="form-row">
-    <label for="node-input-clipLimit"><i class="fa fa-tag"></i> clipLimit</label>
+    <label for="node-input-clipLimit"><i class="fa fa-tag"></i> clip limit</label>
     <input type="number" id="node-input-clipLimit">
   </div>
   <div class="form-row">
@@ -169,7 +204,26 @@
   </div></script>
 
 <script type="text/html" data-help-name="histogram equalization">
-  <p>TODO
+  <p>Enhances an image with low contrast, using a method called histogram equalization, which "spreads
+    out the most frequent intensity values" in an image. The equalized image has a roughly
+    linear cumulative distribution function.
+  </p>
+  <p>Inputs:
+    <ul>
+      <li>msg.payload: A grayscale image
+    </ul>
+  </p>
+  <p>Parameters (only for adaptive equalization):
+    <ul>
+      <li> clip limit [float]: Threshold for contrast limiting
+      <li> tileGridSizeX and Y [int]: Size of grid for histogram equalization. Input image will be divided
+        into equally sized rectangular tiles. tileGridSize defines the number of tiles in row and column.
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: The resulting image
+    </ul>
   </p>
 </script>
 
@@ -178,13 +232,12 @@
 <script type="text/javascript">
   RED.nodes.registerType("match histogram",{
     category: 'histogram related',
-    color: '#666666',
+    color: '#939393',
     defaults: {
       broker: {value:"", type:"my-mqtt-broker", required:true},
-
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img, img_ref",
     outputs:1,
     outputLabels: "img",
     icon: "",
@@ -210,7 +263,20 @@
 </script>
 
 <script type="text/html" data-help-name="match histogram">
-  <p>TODO
+  <p>Manipulates the pixels of an input image so that its histogram matches the histogram of the reference
+    image. If the images have multiple color channels, the matching is done independently for each channel.
+  </p>
+  <p>Inputs:
+    <ul>
+      <li>msg.payload.img: The image to be changed
+      <li>msg.payload.img_ref: The reference image, whose histogram we want to match
+    </ul>
+    The 2 images do not need to have the same dimensions, but they must be either both grayscale or both colored.
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: The resulting image
+    </ul>
   </p>
 </script>
 
@@ -218,7 +284,7 @@
 <script type="text/javascript">
   RED.nodes.registerType("calculate 2d histogram",{
     category: 'histogram related',
-    color: '#666666',
+    color: '#939393',
     defaults: {
       broker: {value:"", type:"my-mqtt-broker", required:true},
       colSpaceType: {value: "RGB"},
@@ -226,9 +292,9 @@
       ch2: {value: "1"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:1,
-    outputLabels: "2d hist",
+    outputLabels: "floatMatr",
     icon: "",
     label: function() {
       return this.name||"calculate 2d histogram";
@@ -290,7 +356,24 @@
   </div>
 </script>
 
-  <script type="text/html" data-help-name="calculate 2d histogram">
-    <p>TODO
-    </p>
-  </script>
+<script type="text/html" data-help-name="calculate 2d histogram">
+  <p>Calculates and returns a 2D histogram for a given image. The 2 dimensions correspond
+    to 2 different channels, for example hue and saturation, value and hue, or red and green.
+  </p>
+  <p>Inputs:
+    <ul>
+      <li>msg.payload: A colored image
+    </ul>
+  </p>
+  <p>Parameters:
+    <ul>
+      <li> Color space: Whether to use HSV or BGR channels to generate the histogram
+      <li> Channel 1 and 2: On which channels to calculate the histogram.
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: The calculated 2D histogram, represented as a 2D float matrix. Ie. an object that contains "scale", a float, and "matr", a grayscale uint16 image where 0 corresponds to -1.0 and 2^16-1 corresponds to 1.0
+    </ul>
+  </p>
+</script>

@@ -26,11 +26,12 @@ def createWindow(windowType: str = "boxcar", w: int = 100, h: int = 100):
 	return {'probMatr': win}
 
 
-# Create mask/window from a given contour, on the size of img_ref
-def createMaskFromContour(img_ref, contour):
+# Create mask/window from a given contour, with size = dimensions
+def createMaskFromContour(dimensions, contour):
+	#todo this could also accept dimensions from config
 
 	# todo do we need this here?
 	contour = np.array(contour)
-	mask = np.zeros(img_ref.shape[0:2], np.uint8)
+	mask = np.zeros(dimensions[0:2], np.uint8)
 	cv.drawContours(mask, [contour], 0, 255, -1)
 	return {'img': mask}

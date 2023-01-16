@@ -12,7 +12,7 @@
       maxIter: {value: "10"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "image",
     outputs:3,
     outputLabels: ["quantized image","labels", "colors"],
     icon: "",
@@ -57,15 +57,28 @@
 
 <script type="text/html" data-help-name="color quantization">
   <p> Color Quantization is the process of reducing number of colors in an image.
-    Also works as segmentation.
+    Also works as segmentation. Uses the k-means algorithm
   </p>
-  <p> Arguments:
+  <p>Inputs:
+    <ul>
+      <li>msg.payload : An image, grayscale or colored.
+    </ul>
+    The images must be grayscale and of the same dimensions
+  </p>
+  <p> Parameters:
     <ul>
       <li> K: the number of Clusters
       <li> Termination criteria: the maximum number of iterations and/or the desired accuracy.
-      <li> Attempts: the number of times the algorithm is executed using different
-      <li> Initial labellings. Returns the labels that yield the best compactness.
+      <li> Attempts: the number of times the algorithm is executed using different initial colors
+      <li> Initial centers: Whether to randomly select the initial colors, or using the KMEANS++ algorithm.
     </ul>
+  </p>
+  <p>Outputs:
+    <ol>
+      <li>msg.payload: The image displayed using only k colors.
+      <li>msg.payload: A (grayscale) image which consists of the labels (from 0 to k-1) for each pixel
+      <li>msg.payload: A JSON list of colors that each of the k labels corresponds to.
+    </ol>
   </p>
 </script>
 
@@ -84,7 +97,7 @@
       linePointsStep: {value: "9"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img (+ contour ?)",
     outputs:1,
     outputLabels: "contour",
     icon: "",
@@ -95,14 +108,13 @@
 </script>
 
 <!--activeContourSegmentation-->
-<!--TODO add the functionality that adds corners to the corner list from your clicks-->
 <script type="text/html" data-template-name="active contour segmentation">
   <div class="form-row">
     <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
     <input id="node-input-broker">
   </div>
   <div class="form-row">
-    <label for="node-input-corners"><i class="fa fa-tag"></i> Corner points</label>
+    <label for="node-input-corners"><i class="fa fa-tag"></i> Contour points</label>
     <input type="text" id="node-input-corners" placeholder="[[50, 450], [50, 1160], [750, 1160], [700, 450]]">
   </div>
   <div class="form-row">
@@ -129,14 +141,20 @@
 
 <script type="text/html" data-help-name="active contour segmentation">
   <p> The active contour model is a method to fit open or closed splines to
-    lines or edges in an image 1. It works by minimising an energy that is in
+    lines or edges in an image. It works by minimising an energy that is in
     part defined by the image and part by the spline’s shape: length and
     smoothness. The minimization is done implicitly in the shape energy and
     explicitly in the image energy.
   </p>
-  <p> Arguments:
+  <p>Inputs:
     <ul>
-      <li> corner points:
+      <li>msg.payload or msg.payload.img : A grayscale image
+      <li>msg.payload.contour (optional) : An JSON list of the points of the initial contour.
+    </ul>
+  </p>
+  <p> Parameters:
+    <ul>
+      <li> Contour points: A JSON list of the points of the initial contour. Can also be given in msg.payload.contour .
       <li> α, β: Snake length shape and smoothness parameter. Higher values
         makes snake contract faster.
       <li> γ: Explicit time stepping parameter.
@@ -144,6 +162,11 @@
         segmentation. Disabled when set to 0.
       <li> point skipping step: Parameter that affects the point number of the
         contour. The higher the parameter, the fewer the points.
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: The contour found by the algorithm.
     </ul>
   </p>
 </script>
@@ -163,9 +186,9 @@
       l2: {value: "1"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "image",
     outputs:1,
-    outputLabels: "mask",
+    outputLabels: "binary img",
     icon: "",
     label: function() {
       return this.name||"morphological chan vese segmentation";
@@ -212,18 +235,28 @@
     average than the outside (i.e., the inner area of the object should be
     darker or lighter than the outer area on average).
   </p>
-  <p> Arguments:
+  <p>Inputs:
+    <ul>
+      <li>msg.payload : A grayscale image
+    </ul>
+  </p>
+  <p> Parameters:
     <ul>
       <li> Initial level set: It defines the method to generate a reasonable
         initial level set with the shape of the image.
-      <li> Iterations
-      <li> Smoothing: Number of times the smoothing operator is applied per
+      <li> Iterations [int]
+      <li> Smoothing [int]: Number of times the smoothing operator is applied per
         iteration. Reasonable values are around 1-4. Larger values lead to
         smoother segmentations.
-      <li> l1: Weight parameter for the outer region. If l1 is larger than l2,
+      <li> l1 [float]: Weight parameter for the outer region. If l1 is larger than l2,
         the outer region will contain a larger range of values than the inner region.
-      <li> l2: Weight parameter for the inner region. If l2 is larger than l1,
+      <li> l2 [float]: Weight parameter for the inner region. If l2 is larger than l1,
         the inner region will contain a larger range of values than the outer region.
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: A binary image, ie. a mask, of the found area.
     </ul>
   </p>
 </script>

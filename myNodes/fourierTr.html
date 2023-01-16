@@ -2,12 +2,12 @@
 <script type="text/javascript">
   RED.nodes.registerType('fourier transform',{
     category: 'fourier transform',
-    color: '#880009',
+    color: '#c37f84',
     defaults: {
       broker: {value:"", type:"my-mqtt-broker", required:true},
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:2,
     outputLabels: ["magnitude", "phase"],
     icon: "",
@@ -23,17 +23,24 @@
     <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
     <input id="node-input-broker">
   </div>
-  <div style="background: var(--red-ui-form-tips-background, #ffe);border-radius: 2px;border: 1px solid var(--red-ui-secondary-border-color, #ddd);">
-    Expected keys for the input message:
-    <ul>
-      <li>Magnitude: magnitude</li>
-      <li>Phase: phase</li>
-    </ul>
-  </div>
 </script>
 
 <script type="text/html" data-help-name="fourier transform">
   <p>Applies the Fourier tranform to the input image. Returns the amplitude and the phase</p>
+  <p>Inputs:
+    <ul>
+      <li>msg.payload: A grayscale image
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload.floatMatr_magnitude: The magnitude; specifically, the log(magnitude + 0.001).
+        Represented as an object where 'scale' is the absolute maximum value, and 'matr' is a uint16
+        image of the normalized magnitude (0 -> -1.0 and 2^16-1 -> +1.0).
+      <li>msg.payload.probMatr_phase: The phase in rad, divided by pi. So, it is also an image which
+        represents a float between -1.0 and 1.0
+    </ul>
+  </p>
 </script>
 
 
@@ -41,14 +48,14 @@
 <script type="text/javascript">
   RED.nodes.registerType('inverse fourier transform',{
     category: 'fourier transform',
-    color: '#880009',
+    color: '#c37f84',
     defaults: {
       broker: {value:"", type:"my-mqtt-broker", required:true},
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "magnitude, phase",
     outputs:1,
-    outputLabels: "",
+    outputLabels: "img",
     icon: "",
     label: function() {
       return this.name||"inverse fourier transform";
@@ -62,8 +69,26 @@
     <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
     <input id="node-input-broker">
   </div>
+  <div style="background: var(--red-ui-form-tips-background, #ffe);border-radius: 2px;border: 1px solid var(--red-ui-secondary-border-color, #ddd);">
+    Expected keys for the input message:
+    <ul>
+      <li>Magnitude: floatMatr_magnitude</li>
+      <li>Phase: probMatr_phase</li>
+    </ul>
+  </div>
 </script>
 
 <script type="text/html" data-help-name="inverse fourier transform">
   <p>Applies the inverse Fourier tranform to the input magnitude and phase. Returns an image.</p>
+  <p>Inputs:
+    <ul>
+      <li>msg.payload.floatMatr_magnitude: The magnitude. For details, see the output of the Fourier transform node.
+      <li>msg.payload.probMatr_phase: The phase
+    </ul>
+  </p>
+  <p>Outputs:
+    <ul>
+      <li>msg.payload: The reconstructed grayscale image
+    </ul>
+  </p>
 </script>

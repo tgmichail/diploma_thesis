@@ -30,6 +30,50 @@
   }
 </script>
 
+<!--createSolidColor-->
+<script type="text/html" data-template-name="create solid image">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-chi"><i class="fa fa-tag"></i> X</label>
+    <input type="number" id="node-input-chi" min=0>
+  </div>
+  <div class="form-row">
+    <label for="node-input-psi"><i class="fa fa-tag"></i> Y</label>
+    <input type="number" id="node-input-psi" min=0>
+  </div>
+  <div class="form-row">
+    <label for="node-input-isGrayscale"><i class="fa fa-tag"></i> isGrayscale</label>
+    <input type="checkbox" id="node-input-isGrayscale" oninput="handleGrayCheckbox(this.checked)">
+  </div>
+  <div class="form-row">
+    <label for="node-input-colorVal"><i class="fa fa-tag"></i> color</label>
+    <input type="color" id="node-input-colorVal">
+  </div>
+  <div class="form-row" hidden>
+    <label for="node-input-grayscaleVal"><i class="fa fa-tag"></i> grayscale value</label>
+    <input type="number" id="node-input-grayscaleVal" min=0 max=255>
+  </div>
+</script> <!--TODO fix: node red allows to put value >255, and sends the request with that bad value-->
+
+<script type="text/html" data-help-name="create solid image">
+  <p> Creates a solid color image of dimensions (x, y)</p>
+  <h3>Inputs</h3>
+    <ul> <li>payload [img] </ul>
+  <h3>Outputs</h3>
+    <ul> <li>payload [img] </ul>
+  <h3>Arguments</h3>
+    <ul>
+      <li>X: width
+      <li>Y: height
+      <li>isGrayscale: If the image to be created is grayscale
+      <li>grayscale value
+      <li>color
+    </ul>
+</script>
+
 
 <!--getImageFromExamples-->
 <script type="text/javascript">
@@ -49,6 +93,104 @@
   });
 </script>
 
+<!--getImageFromExamples-->
+<script type="text/html" data-template-name="get example image">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-imgName"><i class="fa fa-tag"></i> image name</label>
+    <select id="node-input-imgName">
+      <optgroup label="General-purpose images">
+        <option value="astronaut">Astronaut</option>
+        <option value="binary_blobs">Binary blobs</option>
+        <option value="brick">Brick</option>
+        <option value="colorwheel">Colorwheel</option>
+        <option value="camera">Camera</option>
+        <option value="cat">Cat</option>
+        <option value="checkerboard">Checkerboard</option>
+        <option value="clock">Clock</option>
+        <option value="coffee">Coffee</option>
+        <option value="coins">Coins</option>
+        <option value="eagle">Eagle</option>
+        <option value="grass">Grass</option>
+        <option value="gravel">Gravel</option>
+        <option value="horse">Horse</option>
+        <option value="page">Page</option>
+        <option value="rocket">Rocket</option>
+        <option value="text">Text</option>
+      <optgroup label="Scientific images">
+        <option value="cell">Cell</option>
+        <option value="human_mitosis">Human mitosis</option>
+        <option value="hubble_deep_field">Hubble deep field</option>
+        <option value="immunohistochemistry">Immunohistochemistry</option>
+        <option value="microaneurysms">Microaneurysms</option>
+        <option value="moon">Moon</option>
+        <option value="retina">Retina</option>
+        <option value="shepp_logan_phantom">Shepp logan phantom</option>
+        <option value="skin">Skin</option>
+      <optgroup label="Stereo images">
+        <option value="stereo_motorcycle#0">Stereo motorcycle left</option>
+        <option value="stereo_motorcycle#1">Stereo motorcycle right</option>
+    </select>
+  </div>
+</script>
+
+<script type="text/html" data-help-name="get example image">
+  <p>Gets an image from the example ones.</p>
+  <p>Based on skimage.data module</p>
+  <h3>Inputs</h3>
+    <ul> <li>payload [img] </ul>
+  <h3>Outputs</h3>
+    <ul> <li>payload [img] </ul>
+  <h3>Arguments</h3>
+    <ul><li>image name </ul>
+  <h3>References</h3>
+    <ul><li><a href="https://scikit-image.org/docs/stable/api/skimage.data.html">
+      skimage docs</a> - for more information about the images, eg dims, color depth</li>
+    </ul>
+</script>
+
+<!--AddNoise-->
+<script type="text/html" data-template-name="add noise">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-noiseType"><i class="fa fa-tag"></i> Noise type</label>
+    <select id="node-input-noiseType" oninput="handleNoiseTypeDropdown(this.value)">
+      <option value="uniform">uniform
+      <option value="normal">normal
+      <option value="poisson">poisson
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-mean"><i class="fa fa-tag"></i> Mean</label>
+    <input type="number" id="node-input-mean" step="0.01">
+  </div>
+  <div class="form-row">
+    <label for="node-input-scale"><i class="fa fa-tag"></i> Scale</label>
+    <input type="number" id="node-input-scale" step="0.1">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="add noise">
+  <p>Adds noise to an image, of the specified noise type, mean and, if applied,
+    scale.
+  </p>
+  <h3>Inputs</h3>
+    <ul> <li>payload [img] </ul>
+  <h3>Outputs</h3>
+    <ul> <li>payload [img] </ul>
+  <h3>Arguments</h3>
+    <ul>
+      <li>noise type [Normal/Uniform/Poisson]
+      <li>mean: Mean value of the created noise.
+      <li>scale: Only for Gaussian (σ) or Uniform (scaling) distributions.
+    </ul>
+</script>
 
 <!--AddNoise-->
 <script type="text/javascript">
@@ -81,119 +223,8 @@
 </script>
 
 
-<!--createSolidColor-->
-<script type="text/html" data-template-name="create solid image">
-  <div class="form-row">
-    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
-    <input id="node-input-broker">
-  </div>
-  <div class="form-row">
-    <label for="node-input-chi"><i class="fa fa-tag"></i> X</label>
-    <input type="number" id="node-input-chi" min=0>
-  </div>
-  <div class="form-row">
-    <label for="node-input-psi"><i class="fa fa-tag"></i> Y</label>
-    <input type="number" id="node-input-psi" min=0>
-  </div>
-  <div class="form-row">
-    <label for="node-input-isGrayscale"><i class="fa fa-tag"></i> is grayscale</label>
-    <input type="checkbox" id="node-input-isGrayscale" oninput="handleGrayCheckbox(this.checked)">
-  </div>
-  <div class="form-row">
-    <label for="node-input-colorVal"><i class="fa fa-tag"></i> Color</label>
-    <input type="color" id="node-input-colorVal">
-  </div>
-  <div class="form-row" hidden>
-    <label for="node-input-grayscaleVal"><i class="fa fa-tag"></i> Grayscale value</label>
-    <input type="number" id="node-input-grayscaleVal" min=0 max=255>
-  </div>
-</script> <!--TODO fix: node red allows to put value >255, and sends the request with that bad value-->
-
-<script type="text/html" data-help-name="create solid image">
-  <p>Creates an image with given dimensions x and y, and given color.</p>
-</script>
-
-
-<!--getImageFromExamples-->
-<script type="text/html" data-template-name="get example image">
-  <div class="form-row">
-    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
-    <input id="node-input-broker">
-  </div>
-  <div class="form-row">
-    <label for="node-input-imgName"><i class="fa fa-tag"></i> image name</label>
-    <select id="node-input-imgName">
-      <optgroup label="Scientific images">
-        <option value="astronaut">Astronaut</option>
-        <option value="binary_blobs">Binary blobs</option>
-        <option value="brick">Brick</option>
-        <option value="colorwheel">Colorwheel</option>
-        <option value="camera">Camera</option>
-        <option value="cat">Cat</option>
-        <option value="checkerboard">Checkerboard</option>
-        <option value="clock">Clock</option>
-        <option value="coffee">Coffee</option>
-        <option value="coins">Coins</option>
-        <option value="eagle">Eagle</option>
-        <option value="grass">Grass</option>
-        <option value="gravel">Gravel</option>
-        <option value="horse">Horse</option>
-        <option value="page">Page</option>
-        <option value="rocket">Rocket</option>
-        <option value="text">Text</option>
-      <optgroup label="General-purpose images">
-        <option value="cell">Cell</option>
-        <option value="human_mitosis">Human mitosis</option>
-        <option value="hubble_deep_field">Hubble deep field</option>
-        <option value="immunohistochemistry">Immunohistochemistry</option>
-        <option value="microaneurysms">Microaneurysms</option>
-        <option value="moon">Moon</option>
-        <option value="retina">Retina</option>
-        <option value="shepp_logan_phantom">Shepp logan phantom</option>
-        <option value="skin">Skin</option>
-      <optgroup label="Stereo images">
-        <option value="stereo_motorcycle#0">Stereo motorcycle left</option>
-        <option value="stereo_motorcycle#1">Stereo motorcycle right</option>
-    </select>
-  </div>
-</script>
-
-<script type="text/html" data-help-name="get example image">
-  <p>Gets an image from the example ones.</p>
-</script>
-
-<!--AddNoise-->
-<script type="text/html" data-template-name="add noise">
-  <div class="form-row">
-    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
-    <input id="node-input-broker">
-  </div>
-  <div class="form-row">
-    <label for="node-input-noiseType"><i class="fa fa-tag"></i> Noise type</label>
-    <select id="node-input-noiseType" oninput="handleNoiseTypeDropdown(this.value)">
-      <option value="uniform">uniform
-      <option value="normal">normal
-      <option value="poisson">poisson
-    </select>
-  </div>
-  <div class="form-row">
-    <label for="node-input-mean"><i class="fa fa-tag"></i> Mean</label>
-    <input type="number" id="node-input-mean" step="0.01">
-  </div>
-  <div class="form-row">
-    <label for="node-input-scale"><i class="fa fa-tag"></i> Scale</label>
-    <input type="number" id="node-input-scale" step="0.1">
-  </div>
-</script>
-
-<script type="text/html" data-help-name="add noise">
-  <p>Adds noise of the specified type and mean, and possibly multiplied by scale,
-    to an existing image.
-  </p>
-</script>
-
 <!-- use external image -->
-<!-- 
+<!--
 <script type="text/javascript">
   RED.nodes.registerType('use external image',{
     category: 'image sources',
@@ -222,4 +253,3 @@
   </p>
 </script>
 -->
-

@@ -26,8 +26,60 @@
 </script>
 
 <script type="text/html" data-help-name="get image dims">
-  <p> TODO </p>
+  <p>Returns dimensions and color depth info: isGrayscale, shape, numChannels, numDims, colDepth </p>
+  <h3>Inputs</h3>
+    <ul> <li>payload [img] </ul>
+  <h3>Outputs</h3>
+    <ol>
+      <li>payload.isGrayscale [bool]
+      <li>payload.dimensions [tuple]: Contains the width and height of input image
+      <li>payload.width [int]
+      <li>payload.height[int]
+      <li>payload.numChannels: The number of color channels, eg 1 for grayscale, 3 for RGB, 4 for RGBA
+      <li>payload.numDims: eg 3 for RGB or RGBA, 2 for grayscale with 1 channel
+      <li>payload.colDepth
+    </ol>
 </script>
+
+
+<!--changeColorDepth-->
+<script type="text/javascript">
+  RED.nodes.registerType('change color depth',{
+    category: 'basic operations',
+    color: '#ffce30',
+    defaults: {
+      broker: {value:"", type:"my-mqtt-broker", required:true}
+    },
+    inputs:1,
+    inputLabels: "img",
+    outputs:1,
+    outputLabels: "img",
+    icon: "",
+    label: function() {
+      return this.name||"change color depth";
+    }
+  });
+</script>
+
+<!--changeColorDepth-->
+<script type="text/html" data-template-name="change color depth">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
+    <input id="node-input-broker">
+  </div>
+</script>
+
+<!--changeColorDepth-->
+<script type="text/html" data-help-name="change color depth">
+  <p> Changes the color depth of any image, to uint8. This is the supported color depth
+    by all the nodes of remote-image-processing package.
+  </p>
+  <h3>Inputs</h3>
+    <ul> <li>payload [img] </ul>
+  <h3>Outputs</h3>
+    <ol><li>payload [img]: Image of color depth uint8. </ol>
+</script>
+
 
 <!--cvtColor-->
 <script type="text/javascript">
@@ -39,9 +91,9 @@
       colCode: {value: "6"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:1,
-    outputLabels: "",
+    outputLabels: "img",
     icon: "",
     label: function() {
       return this.name||"change color space";
@@ -122,46 +174,18 @@
 </script>
 
 <script type="text/html" data-help-name="change color space">
-<p>Connects to a MQTT broker and publishes messages.</p>
-
+<p>Converts an image from one color space to another. </p>
 <h3>Inputs</h3>
-    <dl class="message-properties">
-        <dt>payload <span class="property-type">string | buffer</span></dt>
-        <dd> the payload of the message to publish. </dd>
-        <dt class="optional">topic <span class="property-type">string</span></dt>
-        <dd> the MQTT topic to publish to.</dd>
-    </dl>
-
- <h3>Outputs</h3>
-     <ol class="node-ports">
-         <li>Standard output
-             <dl class="message-properties">
-                 <dt>payload <span class="property-type">string</span></dt>
-                 <dd>the standard output of the command.</dd>
-             </dl>
-         </li>
-         <li>Standard error
-             <dl class="message-properties">
-                 <dt>payload <span class="property-type">string</span></dt>
-                 <dd>the standard error of the command.</dd>
-             </dl>
-         </li>
-     </ol>
-
-<h3>Details</h3>
-    <p><code>msg.payload</code> is used as the payload of the published message.
-    If it contains an Object it will be converted to a JSON string before being sent.
-    If it contains a binary Buffer the message will be published as-is.</p>
-    <p>The topic used can be configured in the node or, if left blank, can be set
-    by <code>msg.topic</code>.</p>
-    <p>Likewise the QoS and retain values can be configured in the node or, if left
-    blank, set by <code>msg.qos</code> and <code>msg.retain</code> respectively.</p>
-
+  <ul><li>payload [img] </ul>
+<h3>Outputs</h3>
+  <ul><li>payload [img] </ul>
+<h3>Arguments</h3>
+  <ul><li>conversion code </ul>
 <h3>References</h3>
-    <ul>
-        <li><a>Twitter API docs</a> - full description of <code>msg.tweet</code> property</li>
-        <li><a>GitHub</a> - the nodes github repository</li>
-    </ul>
+  <ul>
+    <li><a href="https://docs.opencv.org/3.4/d8/d01/group__imgproc__color__conversions.html#ga397ae87e1288a81d2363b61574eb8cab">
+      OpenCV docs</a> - full description of the function</li>
+  </ul>
 </script>
 
 
@@ -178,9 +202,9 @@
       modulo: {value: false}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "colored img",
     outputs:1,
-    outputLabels: "",
+    outputLabels: "img",
     icon: "",
     label: function() {
       return this.name||"tune hsv";
@@ -217,7 +241,7 @@
 </script>
 
 <script type="text/html" data-help-name="tune hsv">
-  <p> Adjust the HSV values, by mutiplying by a value, adding a value, and if
+  <p> Adjusts the HSV values, by mutiplying by a value, adding a value, and if
     wanted, to clip at 255, use module = true.
   </p>
 </script>
@@ -235,14 +259,23 @@
       threshold: {value: "0.9"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:1,
     outputLabels: "",
     icon: "",
     label: function() {
       return this.name||"get min max location";
+    },
+    oneditprepare: function(){
+      multipointsMinMaxPointsHandler(document.getElementById('node-input-multiPoints').value);
     }
   });
+</script>
+
+<script type="text/javascript">
+  function multipointsMinMaxPointsHandler(val){
+    document.getElementById('node-input-threshold').parentElement.hidden = !val;
+  }
 </script>
 
 <!--minMaxPoints-->
@@ -257,7 +290,7 @@
   </div>
   <div class="form-row">
     <label for="node-input-multiPoints"><i class="fa fa-tag"></i> multiple points</label>
-    <input type="checkbox" id="node-input-multiPoints">
+    <input type="checkbox" id="node-input-multiPoints" oninput="multipointsMinMaxPointsHandler(this.checked)">
   </div>
   <div class="form-row">
     <label for="node-input-threshold"><i class="fa fa-tag"></i> threshold</label>
@@ -266,10 +299,20 @@
 </script>
 
 <script type="text/html" data-help-name="get min max location">
-  <p> TODO
+  <p> Finds the positions of the global extrema in a probMatrix, or the positions
+    of the points that are above a threshold.
   </p>
+  <h3>Inputs</h3>
+    <ul><li>payload [probMatr] </ul>
+  <h3>Outputs</h3>
+    <ol><li>payload [points] </ol>
+  <h3>Arguments</h3>
+  <ol>
+    <li>getMin [bool]: Minimum or maximum points
+    <li>multiPoints [bool]: Global min/max or below/above a threshold
+    <li>threshold [float]: Should be in the interval [0,1]
+  </ol>
 </script>
-
 
 <!--morphTransform-->
 <script type="text/javascript">
@@ -284,9 +327,9 @@
       iterationNum: {value: "1"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:1,
-    outputLabels: "",
+    outputLabels: "img",
     icon: "",
     label: function() {
       return this.name||"morphological transform";
@@ -331,9 +374,26 @@
 </script>
 
 <script type="text/html" data-help-name="morphological transform">
-  <p> Performs a morphological transform such as erosion, dilation, opening, morphological gradient etc. For detailed help, see the <a href="https://docs.opencv.org/4.x/d9/d61/tutorial_py_morphological_ops.html">OpenCV help pages</a></p>
+  <p> Performs a morphological transformation to a grayscale image (erosion,
+    dilation and combinations of them).
   <p>Note: The number of iterations refers to erosions and dilations. Ie. an opening with 2 iterations
   will do erode -> erode -> dilate -> dilate; and not erode -> dilate -> erode -> dilate. </p>
+
+<h3>Inputs</h3>
+  <ul><li>payload [img] </ul>
+<h3>Outputs</h3>
+  <ol><li>payload [img] </ol>
+<h3>Arguments</h3>
+<ol>
+  <li>kernelSize: Structuring element dimensions. For simplicity it's the same
+    in both dimensions. Eg kernelSize = 5, would actually mean (5,5).
+  <li>kernelShape:  Structuring element shape
+  <li>transformation
+  <li>iterations: Number of iterations, reffering to erosions and dilations.
+</ol>
+<h3>References</h3>
+  <a href="https://docs.opencv.org/4.x/d4/d86/group__imgproc__filter.html#gac342a1bb6eabf6f55c803b09268e36dc"> Structuring element - OpenCV docs</a>
+  <a></a>
 </script>
 
 
@@ -353,7 +413,7 @@
       const: {value: "0"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:1,
     outputLabels: "",
     icon: "",
@@ -468,7 +528,11 @@
 </script>
 
 <script type="text/html" data-help-name="thresholding">
-  <p> TODO </p>
+  <p> Applies a simple or adaptive threshold to an input image or probMatr. </p>
+  <h3>Inputs</h3>
+    <ul><li>payload [img or probMatr]</ul>
+  <h3>Outputs</h3>
+    <ol><li>payload .... todo </ol>
 </script>
 
 
@@ -482,7 +546,7 @@
 
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:3,
     outputLabels: ["ch1", "ch2", "ch3"],
     icon: "",
@@ -504,6 +568,7 @@
   <p> Split is used to split coloured/multi-channel image into separate
     single-channel images.
   </p>
+
 </script>
 
 
@@ -560,7 +625,7 @@
 
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img_1, img_2",
     outputs:1,
     outputLabels: "img",
     icon: "",
@@ -603,7 +668,7 @@
       gamma: {value: "0"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img_1, img_2",
     outputs:1,
     outputLabels: "img",
     icon: "",
@@ -658,7 +723,7 @@
 
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img_1, img_2",
     outputs:1,
     outputLabels: "img",
     icon: "",
@@ -701,7 +766,7 @@
       tileSizeY: {value:"8"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img_1, img_2",
     outputs:1,
     outputLabels: "img",
     icon: "",
@@ -821,7 +886,7 @@
       fy: {value: "1"}
     },
     inputs:1,
-    inputLabels: "",
+    inputLabels: "img",
     outputs:1,
     outputLabels: "img",
     icon: "",
@@ -831,6 +896,8 @@
   });
 </script>
 
+
+<!-- affine transform - 3 parts: resize, rotation, addOffsetOrCrop -->
 <!-- resize -->
 <script type="text/html" data-template-name="resize image">
   <div class="form-row">
@@ -838,23 +905,23 @@
     <input id="node-input-broker">
   </div>
   <div class="form-row">
-    <label for="node-input-dsize_cols"><i class="fa fa-tag"></i> dsize_cols</label>
+    <label for="node-input-dsize_cols"><i class="fa fa-tag"></i> Destination width</label>
     <input type="number" id="node-input-dsize_cols" min=0>
   </div>
   <div class="form-row">
-    <label for="node-input-dsize_rows"><i class="fa fa-tag"></i> dsize_rows</label>
+    <label for="node-input-dsize_rows"><i class="fa fa-tag"></i> Destination height</label>
     <input type="number" id="node-input-dsize_rows" min=0>
   </div>
   <div class="form-row">
-    <label for="node-input-fx"><i class="fa fa-tag"></i> fx</label>
+    <label for="node-input-fx"><i class="fa fa-tag"></i> Scale x</label>
     <input type="number" id="node-input-fx" min=0 step=0.1>
   </div>
   <div class="form-row">
-    <label for="node-input-fy"><i class="fa fa-tag"></i> fy</label>
+    <label for="node-input-fy"><i class="fa fa-tag"></i> Scale y</label>
     <input type="number" id="node-input-fy" min=0 step=0.1>
   </div>
   <div class="form-row">
-    <label for="node-input-interpolationMode"><i class="fa fa-tag"></i> interpolation mode</label>
+    <label for="node-input-interpolationMode"><i class="fa fa-tag"></i> Interpolation mode</label>
     <select id="node-input-interpolationMode">
       <option value="0">INTER_NEAREST</option>
       <option value="1">INTER_LINEAR</option>
@@ -866,24 +933,46 @@
 </script>
 
 <script type="text/html" data-help-name="resize image">
-  <p>TODO
+  <p>Scale an image up or down. Either by a given factor, or to given destination dimensions.
   </p>
+  <p>If scaleX or scaleY is zero, the image will be resized to fit the dimensions given. If the dimensions
+    are zero, the image will be scaled by scaleX and Y. Either the scales or the dimensions must be non-zero.
+    If both are non-zero, the image will be cropped or filled with black. TODO verify this
+  <h3>Inputs</h3>
+  <ul>
+    <li>payload or payload.img : The image to be resized
+    <li>payload.dimensions : Optional. The desired dimensions. Alternatively can be set as arguments.
+  </ul>
+<h3>Arguments</h3>
+  <ul>
+    <li>Destination width, height [int]. Alternatively can be set in the input msg.payload
+    <li>Scale x and y [float]
+    <li>Interpolation mode: For shrinking an image, it will generally look best with INTER_AREA
+      interpolation, whereas for enlarging, it will generally look best with INTER_CUBIC or INTER_LINEAR.
+  </ul>
+<h3>Outputs</h3>
+  <ul><li>payload [img] </ul>
+<h3>References</h3>
+  <ul>
+    <li><a href="https://docs.opencv.org/4.x/da/d54/group__imgproc__transform.html#ga47a974309e9102f5f08231edc7e7529d">
+      OpenCV docs</a> - full description of the function</li>
+  </ul>
 </script>
 
-
-<!-- affineTransform -->
+<!-- rotation -->
 <script type="text/javascript">
-  RED.nodes.registerType("affine transform",{
+  RED.nodes.registerType("rotation",{
     category: 'basic operations',
     color: '#ffce30',
     defaults: {
       broker: {value:"", type:"my-mqtt-broker", required:true},
-      translationPercentX: {value: "0"},
-      translationPercentY: {value: "0"},
-      rotCenterPercentX: {value: "0.5"},
-      rotCenterPercentY: {value: "0.5"},
+      rotCenterX: {value: "50"},
+      rotCenterY: {value: "50"},
       rotAngle: {value: "0"},
-      scale: {value: "1"}
+      dimsPercent: {value: true},
+      destDimsSame: {value: true},
+      destDimsX: {value: ""},
+      destDimsX: {value: ""}
     },
     inputs:1,
     inputLabels: "",
@@ -891,45 +980,56 @@
     outputLabels: "img",
     icon: "",
     label: function() {
-      return this.name||"affine transform";
+      return this.name||"rotation";
+    },
+    oneditprepare: function(){
+      handleDestDimsSameRotation(document.getElementById('node-input-destDimsSame').checked);
     }
   });
+  function handleDestDimsSameRotation(val){
+    document.getElementById('node-input-destDimsX').parentElement.hidden = !!val;
+    document.getElementById('node-input-destDimsY').parentElement.hidden = !!val;
+  }
 </script>
 
-<!-- affineTransform -->
-<script type="text/html" data-template-name="affine transform">
+<!-- rotation -->
+<script type="text/html" data-template-name="rotation">
   <div class="form-row">
     <label for="node-input-broker"><i class="fa fa-tag"></i> Broker</label>
     <input id="node-input-broker">
   </div>
   <div class="form-row">
-    <label for="node-input-translationPercentX"><i class="fa fa-tag"></i> translationPercentX</label>
-    <input type="number" id="node-input-translationPercentX" min=0 step=0.1>
+    <label for="node-input-rotCenterX"><i class="fa fa-tag"></i> rotCenterX</label>
+    <input type="number" id="node-input-rotCenterX" min=0>
   </div>
   <div class="form-row">
-    <label for="node-input-translationPercentY"><i class="fa fa-tag"></i> translationPercentY</label>
-    <input type="number" id="node-input-translationPercentY" min=0 step=0.1>
-  </div>
-  <div class="form-row">
-    <label for="node-input-rotCenterPercentX"><i class="fa fa-tag"></i> rotCenterPercentX</label>
-    <input type="number" id="node-input-rotCenterPercentX" min=0 step=0.1>
-  </div>
-  <div class="form-row">
-    <label for="node-input-rotCenterPercentY"><i class="fa fa-tag"></i> rotCenterPercentY</label>
-    <input type="number" id="node-input-rotCenterPercentY" min=0 step=0.1>
+    <label for="node-input-rotCenterY"><i class="fa fa-tag"></i> rotCenterY</label>
+    <input type="number" id="node-input-rotCenterY" min=0>
   </div>
   <div class="form-row">
     <label for="node-input-rotAngle"><i class="fa fa-tag"></i> rotAngle</label>
     <input type="number" id="node-input-rotAngle" min=0>
   </div>
   <div class="form-row">
-    <label for="node-input-scale"><i class="fa fa-tag"></i> scale</label>
-    <input type="number" id="node-input-scale" min=0.1 step=0.1>
+    <label for="node-input-dimsPercent"><i class="fa fa-tag"></i> dimsPercent</label>
+    <input type="checkbox" id="node-input-dimsPercent">
+  </div>
+  <div class="form-row">
+    <label for="node-input-destDimsSame"><i class="fa fa-tag"></i> keep same destination dimensions</label>
+    <input type="checkbox" id="node-input-destDimsSame" oninput="handleDestDimsSameRotation(this.checked)">
+  </div>
+  <div class="form-row">
+    <label for="node-input-destDimsX"><i class="fa fa-tag"></i> Destination width</label>
+    <input type="number" id="node-input-destDimsX" min=0>
+  </div>
+  <div class="form-row">
+    <label for="node-input-destDimsY"><i class="fa fa-tag"></i> Destination height</label>
+    <input type="number" id="node-input-destDimsY" min=0>
   </div>
 </script>
 
-<script type="text/html" data-help-name="affine transform">
-  <p>TODO
+<script type="text/html" data-help-name="rotation">
+  <p>destDims only absolute, rotation point absolute or relative
   </p>
 </script>
 
@@ -1106,6 +1206,6 @@
 
 <script type="text/html" data-help-name="add offset or crop">
   <p>If left, right, top, or bot, are > 0, this offset is added to that side.
-  If they are <0, the image is cropped that much at that side.
+  If they are &lt;0, the image is cropped that much at that side.
   </p>
 </script>

@@ -37,6 +37,32 @@ module.exports = function(RED) {
   }
   RED.nodes.registerType("get image dims", GetImageDims);
 
+  //changeColorDepth
+  function ChangeColorDepth(config) {
+    RED.nodes.createNode(this, config);
+    let node = this;
+
+    let broker = RED.nodes.getNode(config.broker);
+
+    node.on('input', function(msg, nodeSend, nodeDone) {
+
+      let request = {
+        funcName: "changeColorDepth",
+        params: {
+          img: msg.payload
+        }
+      }
+      broker.sendMsg(request, node, msg.times, function callback(response){
+
+        msg.payload = response.data.results.img;
+        msg.key = "img"
+        nodeSend(msg);
+        nodeDone();
+      });
+    });
+  }
+  RED.nodes.registerType("change color depth", ChangeColorDepth);
+
   //cvtColor
   function ChangeColorSpace(config) {
     RED.nodes.createNode(this, config);
@@ -422,13 +448,22 @@ module.exports = function(RED) {
       let request = {
         funcName: "resize",
         params: {
-          img_src: msg.payload,
-          dsize: [parseInt(config.dsize_cols), parseInt(config.dsize_rows)],
-          fx: parseFloat(config.fx),
-          fy: parseFloat(config.fy),
+          img_src: msg.payload.img || msg.payload,
+          // dsize: set later
+          fx: parseFloat(config.fx) || 0,
+          fy: parseFloat(config.fy) || 0,
           interpolation: parseInt(config.interpolationMode)
         }
       }
+
+      if (msg.payload.dimensions)
+        request.params.dsize = msg.payload.dimensions;
+      else
+        request.params.dsize = [parseInt(config.dsize_cols) || 0, parseInt(config.dsize_rows) || 0];
+
+      if (request.params.dsize[0] == 0 || request.params.dsize[1] == 0)
+        request.params.dsize = null; // so that the size is calculated by fx and fy
+
 
       broker.sendMsg(request, node, msg.times, function callback(response){
 
@@ -441,25 +476,26 @@ module.exports = function(RED) {
   }
   RED.nodes.registerType("resize image", ResizeImg);
 
-  //affineTransform
-  function AffineTransform(config) {
+  //rotation
+  function Rotation(config) {
     RED.nodes.createNode(this, config);
     let node = this;
 
     let broker = RED.nodes.getNode(config.broker);
 
     node.on('input', function(msg, nodeSend, nodeDone) {
+      let destDims = msg.payload.destDims ||
+        [parseInt(config.destDimsX), parseInt(config.destDimsY)];
 
       let request = {
-        funcName: "affineTransform",
+        funcName: "rotation",
         params: {
-          img: msg.payload,
-          translationPercentX: parseFloat(config.translationPercentX),
-          translationPercentY: parseFloat(config.translationPercentY),
-          rotCenterPercentX: parseFloat(config.rotCenterPercentX),
-          rotCenterPercentY: parseFloat(config.rotCenterPercentY),
-          rotAngle: parseFloat(config.rotAngle),
-          scale:  parseFloat(config.scale)
+          img: msg.payload.img || msg.payload,
+          rotCenterX: parseFloat(config.rotCenterX),
+          rotCenterY: parseFloat(config.rotCenterY),
+          rotAngle: parseInt(config.rotAngle),
+          dimsPercent: config.dimsPercent,
+          destDims: config.destDimsSame ? null : destDims
         }
       }
 
@@ -472,7 +508,7 @@ module.exports = function(RED) {
       });
     });
   }
-  RED.nodes.registerType("affine transform", AffineTransform);
+  RED.nodes.registerType("rotation", Rotation);
 
 
   //combineImages
@@ -549,7 +585,7 @@ module.exports = function(RED) {
         color = parseInt(config.grayscaleVal)
       } else {
         // colorVal is in #FFFFFF format
-        color = hexToRGB(config.colorVal)
+        color = hexToBGR(config.colorVal)
       }
       let request = {
         funcName: "addOffsetOrCrop",
@@ -575,13 +611,12 @@ module.exports = function(RED) {
   RED.nodes.registerType("add offset or crop", AddOffsetOrCrop);
 }
 
-function hexToRGB(hex){
+function hexToBGR(hex){ // create solid color takes bgr input
 
   hex = hex.substring(1,7).match(/.{2}/g);
-  let rgb = [
-    parseInt(hex[0], 16),
+  return [
+    parseInt(hex[2], 16),
     parseInt(hex[1], 16),
-    parseInt(hex[2], 16)
+    parseInt(hex[0], 16)
   ];
-  return rgb;
- }
+}
